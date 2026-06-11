@@ -1,0 +1,1 @@
+export const BASE_URL = "https://account-book-backend-rma8.onrender.com/api";
