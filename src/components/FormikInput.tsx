@@ -1,6 +1,6 @@
 import {Field, ErrorMessage} from 'formik';
 import type { ReactNode } from 'react';
-export default function FormikInput({className, name, type,label,placeholder}: {className?: string, name: string, type: string, label: string, placeholder: string}) {
+export default function FormikInput({className, name, type,label,placeholder,readonly}: {className?: string, name: string, type: string, label: string, placeholder: string, readonly?: boolean}) {
     let MyField: ReactNode;
     if(type === "select" && name === 'bussinessType'){
       MyField=<Field id={name} name={name}>
@@ -25,7 +25,7 @@ export default function FormikInput({className, name, type,label,placeholder}: {
         )}
       </Field>
     }else{
-      MyField=<Field id={name} type={type} name={name} placeholder={placeholder} className={`bg-white text-gray-700 placeholder:text-gray-400 border-2 border-blue-500 focus:outline-none focus:bg-yellow-400  rounded-md px-1 `+ className}/>
+      MyField=<Field id={name} type={type} name={name} placeholder={placeholder} readOnly={readonly? readonly : false} className={`bg-white text-gray-700 placeholder:text-gray-400 border-2 border-blue-500 focus:outline-none focus:bg-yellow-400  rounded-md px-1 `+ className}/>
     }
     return (<div className='flex flex-col gap-1 w-full'>
       <label htmlFor={name} id={`${name}-label`} className='text-sm font-medium text-gray-700'>{label}:</label>

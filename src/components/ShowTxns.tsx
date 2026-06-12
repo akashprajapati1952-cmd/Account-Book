@@ -1,6 +1,12 @@
+import { useState } from "react";
 import type { CustomersWithId } from "../models";
+import { ImMenu } from "react-icons/im";
+import Button from "./Button";
 
-function ShowTxns({customer, onClick}: {customer: CustomersWithId, onClick: ()=>void}){
+
+function ShowTxns({customer, onClick,deleteCustomer}: {customer: CustomersWithId, onClick: ()=>void,deleteCustomer: ()=>void}){
+  const [isMenuOpen,setIsMenuOpen]=useState(false)
+  const [isDeleting, setIsDeleting]=useState(false)
     
     const txns = [
         ...Object.entries(customer.moneyToGive ?? {}).map(([id, txn]) => ({
@@ -18,13 +24,30 @@ function ShowTxns({customer, onClick}: {customer: CustomersWithId, onClick: ()=>
       if(dateDiff !== 0)return dateDiff;
       return(Number(a.id.split('_')[1])-Number(b.id.split('_')[1]))
     });
+    
     return (
-      <div onClick={onClick} className="grow ">
-        <h2 className="text-xl font-bold mb-4 text-center">
-          {customer.name}
-        </h2>
+      <div onClick={onClick} className="relative flex flex-col h-[70dvh]">
+        <div className="flex justify-between">
+          <h2 className="text-xl font-bold mb-4 text-center">
+            {customer.name}
+          </h2>
+          <ImMenu onClick={()=>setIsMenuOpen(!isMenuOpen)} />
+        </div>
+        {isMenuOpen && <div className="absolute top-5 right-1 border-2 px-2 rounded-lg bg-gray-500">
+          <button type="button" onClick={()=>{
+            setIsDeleting(true)
+            setIsMenuOpen(false)
+          }}>Delete Customer</button>
+        </div>}
+        {isDeleting && <div className="absolute top-1/2 left-[calc(50%-140px)] w-70 bg-rose-700 p-2 rounded-lg space-y-2">
+          <p className="text-center">Are you sure to delete customer named {customer.name}?</p>
+          <div className="flex gap-2">
+            <Button type="button" handleClick={deleteCustomer}>Delete</Button>
+            <Button type="button" handleClick={()=>setIsDeleting(false)}>Back</Button>
+          </div>
+        </div>}
 
-        <div className="space-y-4">
+        <div className="grow space-y-4 overflow-y-auto max-h-full">
           {txns.map((txn) => (
             <div
               key={txn.id}

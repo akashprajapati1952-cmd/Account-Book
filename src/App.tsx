@@ -8,6 +8,7 @@ import { useAppDispatch } from './store/store';
 import { useEffect } from 'react';
 import { userRelogin } from './reducers/userSlice';
 import CustomerTxns from './pages/CustomerTxns';
+import UserProfile from './pages/UserProfile';
 
  
 
@@ -20,13 +21,14 @@ function App() {
   return (
     <div className='flex flex-col items-center h-dvh '>
       <Header/>
-      <div className='flex flex-col grow w-full '>
+      <div className='flex flex-col h-[calc(100%-60px)] w-full '>
       <Routes>
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
         <Route element={<ProtectedRoutes/>}>
           <Route path='/' element={<CustomerList/>}/>
           <Route path="/customer/:customerId" element={<CustomerTxns/>}/>
+          <Route path='/userProfile' element={<UserProfile/>}/>
         </Route>
       </Routes>
       </div>

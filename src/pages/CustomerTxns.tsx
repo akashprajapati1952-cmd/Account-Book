@@ -6,18 +6,21 @@ import ShowTxns from "../components/ShowTxns"
 import AddEntry from "../components/AddEntry"
 import Button from "../components/Button"
 import { useState } from "react"
-import { addGiven, addTaken } from "../reducers/customerSlice"
+import { addGiven, addTaken, deleteCustomer } from "../reducers/customerSlice"
+import { useNavigate } from "react-router-dom"
 
 
 interface Props{
     params: Record<string,string>
 }
 type CustomerTxnsProps=Props & Redux_props
-function CustomerTxns({customer, addGiven,addTaken,params}:CustomerTxnsProps){
+function CustomerTxns({customer, addGiven,addTaken,params,deleteCustomer}:CustomerTxnsProps){
+  const navigate=useNavigate()
   const customerId=params['customerId']
   const [addingTake, setAddingTake]=useState(false)
   const [addingGive, setAddingGive]=useState(false)
-  console.log(customerId)
+  console.log(typeof customer.totalTake, typeof customer.totalGive)
+ 
   function handleTakenSubmit(values: any){
     addTaken({values,customerId})
     setAddingTake(false)
@@ -30,11 +33,14 @@ function CustomerTxns({customer, addGiven,addTaken,params}:CustomerTxnsProps){
   }
 
   return (
-    <div  className="flex grow flex-col relative bg-red-600">
+    <div  className="flex h-full flex-col relative bg-red-600 p-3 gap-5">
       <ShowTxns onClick={()=>{
           setAddingGive(false)
           setAddingTake(false)
         }} 
+        deleteCustomer={()=>{deleteCustomer(customer.customerId)
+          navigate(-1)
+        }}
         customer={customer}
       />
       
@@ -43,20 +49,22 @@ function CustomerTxns({customer, addGiven,addTaken,params}:CustomerTxnsProps){
           {addingTake && <AddEntry heading="Add Given" handleSubmit={handleTakenSubmit}/>}
           {addingGive && <AddEntry heading="Add Recieved" handleSubmit={handleGivenSubmit}/>}
       </div>)}
-      <div className="flex justify-between px-2 mb-3">
-        <p><b>Total:</b></p>
-        <p><b>₹{customer.totalTake-customer.totalGive}</b></p>
-      </div>
-      <div className="flex">
+      <div className="flex flex-col justify-evenly h-[calc(30dvh-60px)] ">
+        <div className="flex justify-between px-2  bg-amber-500 rounded-md">
+          <p><b>Total:-</b></p>
+          <p><b>₹{customer.totalTake-customer.totalGive}</b></p>
+        </div>
+        <div className="flex">
         
-        <Button type='button' handleClick={()=>{
-          setAddingGive(true)
-          setAddingTake(false)
-          }}>Add Recieved</Button>
-        <Button type='button' handleClick={()=>{
-          setAddingTake(true)
-          setAddingGive(false)
-          }}>Add Given</Button>
+          <Button type='button' handleClick={()=>{
+            setAddingGive(true)
+            setAddingTake(false)
+            }}>Money Recieved</Button>
+          <Button type='button' handleClick={()=>{
+            setAddingTake(true)
+            setAddingGive(false)
+            }}>Money Given</Button>
+        </div>
       </div>
     </div>
   )
@@ -72,7 +80,8 @@ const mapStateToProps=(state: State, ownProps: Props)=>{
 }
 const mapDispatchToProps={
     addTaken,
-    addGiven
+    addGiven,
+    deleteCustomer
 }
 
 const connectedComp=connect(mapStateToProps,mapDispatchToProps)
