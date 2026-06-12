@@ -1,6 +1,6 @@
 import type { CustomersWithId } from "../models";
 
-function ShowTxns({customer}: {customer: CustomersWithId}){
+function ShowTxns({customer, onClick}: {customer: CustomersWithId, onClick: ()=>void}){
     
     const txns = [
         ...Object.entries(customer.moneyToGive ?? {}).map(([id, txn]) => ({
@@ -15,7 +15,7 @@ function ShowTxns({customer}: {customer: CustomersWithId}){
         })),
     ].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
     return (
-      <div className="grow bg-red-600">
+      <div onClick={onClick} className="grow ">
         <h2 className="text-xl font-bold mb-4 text-center">
           {customer.name}
         </h2>

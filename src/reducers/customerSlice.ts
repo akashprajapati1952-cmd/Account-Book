@@ -2,6 +2,7 @@ import { createAsyncThunk, createSlice, type PayloadAction } from "@reduxjs/tool
 import type { Customer, CustomersWithId } from "../models";
 import { BASE_URL } from "../Tools/baseUrls";
 import axios from "axios";
+import { useParams } from "react-router-dom";
 
 
 type CustomerState={ customers: Record<string, CustomersWithId>; loading: boolean, error: string | null}
@@ -18,6 +19,32 @@ export const addCustomer=createAsyncThunk('customer/add', async(values: any,thun
         return thunkAPI.rejectWithValue('Something went wrong')
     }
 });
+
+export const addTaken=createAsyncThunk('customer/add-take',async(values: any, thunkAPI)=>{
+    try{
+        const id=useParams()["customerId"]
+        const response= await axios.post(BASE_URL+'/customer/'+id+"add-take",values,{headers:{authorization:`Bearer ${localStorage.getItem('token')}`}})
+        return response.data
+    }catch(err){
+        if(axios.isAxiosError(err)){
+          return thunkAPI.rejectWithValue(err.response?.data.message || 'Failed to add entry');
+        }
+        return thunkAPI.rejectWithValue('Something went wrong')
+    }
+})
+
+export const addGiven=createAsyncThunk('customer/add-give',async(values: any, thunkAPI)=>{
+    try{
+        const id=useParams()["customerId"]
+        const response= await axios.post(BASE_URL+'/customer/'+id+"add-give",values,{headers:{authorization:`Bearer ${localStorage.getItem('token')}`}})
+        return response.data
+    }catch(err){
+        if(axios.isAxiosError(err)){
+          return thunkAPI.rejectWithValue(err.response?.data.message || 'Failed to add entry');
+        }
+        return thunkAPI.rejectWithValue('Something went wrong')
+    }
+})
 
 
 const setCustomers=(state: CustomerState, action: PayloadAction<Record<string, Customer>>)=>{
