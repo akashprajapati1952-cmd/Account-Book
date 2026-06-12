@@ -23,7 +23,7 @@ export const addCustomer=createAsyncThunk('customer/add', async(values: any,thun
 export const addTaken=createAsyncThunk('customer/add-take',async(values: any, thunkAPI)=>{
     try{
         const id=useParams()["customerId"]
-        const response= await axios.post(BASE_URL+'/customer/'+id+"add-take",values,{headers:{authorization:`Bearer ${localStorage.getItem('token')}`}})
+        const response= await axios.post(BASE_URL+'/customer/'+id+"add-take",{...values,date: new Date().toISOString().split("T")[0]},{headers:{authorization:`Bearer ${localStorage.getItem('token')}`}})
         return response.data
     }catch(err){
         if(axios.isAxiosError(err)){
@@ -36,7 +36,7 @@ export const addTaken=createAsyncThunk('customer/add-take',async(values: any, th
 export const addGiven=createAsyncThunk('customer/add-give',async(values: any, thunkAPI)=>{
     try{
         const id=useParams()["customerId"]
-        const response= await axios.post(BASE_URL+'/customer/'+id+"add-give",values,{headers:{authorization:`Bearer ${localStorage.getItem('token')}`}})
+        const response= await axios.post(BASE_URL+'/customer/'+id+"add-give",{...values,date: new Date().toISOString().split("T")[0]},{headers:{authorization:`Bearer ${localStorage.getItem('token')}`}})
         return response.data
     }catch(err){
         if(axios.isAxiosError(err)){
@@ -59,14 +59,21 @@ const customerSlice=createSlice({
       setCustomers
     },
     extraReducers: (builder) => {
-        builder.addCase(addCustomer.pending, (state) => {
-            state.loading = true;
-        }).addCase(addCustomer.fulfilled, (state, action) => {
+        builder.addCase(addCustomer.fulfilled, (state, action) => {
             state.loading = false;
             const customer=action.payload
             customer.customer.customerId=customer.customerId
             state.customers[customer.customer.customerId]=customer.customer
-        }).addCase(addCustomer.rejected, (state, action) => {
+        }).addCase(addGiven.fulfilled,(state,action)=>{
+          state.loading=false;
+          
+        }).addCase(addTaken.fulfilled,(state, action)=>{
+          state.loading=false
+        })
+        builder.addMatcher((action)=>action.type.endsWith("/pending"), (state) => {
+            state.loading = true;
+            state.error=null;
+        }).addMatcher((action)=>action.type.endsWith("/rejected"), (state, action) => {
             state.loading = false;
             state.error = action.payload as string;
         })
