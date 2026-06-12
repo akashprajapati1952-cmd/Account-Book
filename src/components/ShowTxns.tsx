@@ -13,7 +13,11 @@ function ShowTxns({customer, onClick}: {customer: CustomersWithId, onClick: ()=>
             ...txn,
             type: "take" as const,
         })),
-    ].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+    ].sort((a, b) =>{
+      const dateDiff= new Date(a.date).getTime() - new Date(b.date).getTime()
+      if(dateDiff !== 0)return dateDiff;
+      return(Number(a.id.split('_')[1])-Number(b.id.split('_')[1]))
+    });
     return (
       <div onClick={onClick} className="grow ">
         <h2 className="text-xl font-bold mb-4 text-center">

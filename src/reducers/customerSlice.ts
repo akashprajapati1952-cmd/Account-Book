@@ -2,7 +2,6 @@ import { createAsyncThunk, createSlice, type PayloadAction } from "@reduxjs/tool
 import type { Customer, CustomersWithId } from "../models";
 import { BASE_URL } from "../Tools/baseUrls";
 import axios from "axios";
-import { useParams } from "react-router-dom";
 
 
 type CustomerState={ customers: Record<string, CustomersWithId>; loading: boolean, error: string | null}
@@ -20,10 +19,10 @@ export const addCustomer=createAsyncThunk('customer/add', async(values: any,thun
     }
 });
 
-export const addTaken=createAsyncThunk('customer/add-take',async(values: any, thunkAPI)=>{
+export const addTaken=createAsyncThunk('customer/add-take',async({ customerId, values }: { customerId: string; values: any }, thunkAPI)=>{
     try{
-        const id=useParams()["customerId"]
-        const response= await axios.post(BASE_URL+'/customer/'+id+"add-take",{...values,date: new Date().toISOString().split("T")[0]},{headers:{authorization:`Bearer ${localStorage.getItem('token')}`}})
+
+        const response= await axios.post(BASE_URL+'/customer/'+customerId+"/add-take",{...values,date: new Date().toISOString().split("T")[0]},{headers:{authorization:`Bearer ${localStorage.getItem('token')}`}})
         return response.data
     }catch(err){
         if(axios.isAxiosError(err)){
@@ -33,10 +32,10 @@ export const addTaken=createAsyncThunk('customer/add-take',async(values: any, th
     }
 })
 
-export const addGiven=createAsyncThunk('customer/add-give',async(values: any, thunkAPI)=>{
+export const addGiven=createAsyncThunk('customer/add-give',async({ customerId, values }: { customerId: string; values: any }, thunkAPI)=>{
     try{
-        const id=useParams()["customerId"]
-        const response= await axios.post(BASE_URL+'/customer/'+id+"add-give",{...values,date: new Date().toISOString().split("T")[0]},{headers:{authorization:`Bearer ${localStorage.getItem('token')}`}})
+       
+        const response= await axios.post(BASE_URL+'/customer/'+customerId+"/add-give",{...values,date: new Date().toISOString().split("T")[0]},{headers:{authorization:`Bearer ${localStorage.getItem('token')}`}})
         return response.data
     }catch(err){
         if(axios.isAxiosError(err)){
@@ -66,16 +65,17 @@ const customerSlice=createSlice({
             state.customers[customer.customer.customerId]=customer.customer
         }).addCase(addGiven.fulfilled,(state,action)=>{
           state.loading=false;
-          
+          console.log(action.payload)
         }).addCase(addTaken.fulfilled,(state, action)=>{
           state.loading=false
+          console.log(action.payload)
         })
         builder.addMatcher((action)=>action.type.endsWith("/pending"), (state) => {
             state.loading = true;
             state.error=null;
         }).addMatcher((action)=>action.type.endsWith("/rejected"), (state, action) => {
             state.loading = false;
-            state.error = action.payload as string;
+            state.error = (action as any).error.message as string;
         })
     }
 })

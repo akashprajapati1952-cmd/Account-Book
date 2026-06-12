@@ -1,6 +1,5 @@
 import { Form, Formik } from "formik";
 import FormikInput from "./FormikInput";
-import Button from "./Button";
 import * as Yup from 'yup'
 
 function AddEntry({handleSubmit,heading}:{handleSubmit: (values: any)=>void; heading: string}){
@@ -18,7 +17,7 @@ function AddEntry({handleSubmit,heading}:{handleSubmit: (values: any)=>void; hea
                 <h1 className="text-lg"><b>{heading}</b></h1>
                 <FormikInput name='amount' type='number' label="Amount" placeholder="Enter amount here"/>
                 <FormikInput name='note' type='string' label="Note" placeholder="Enter Note"/>
-                <Button type='submit'>Add Entry</Button>
+                <button type='submit' className=' text-white px-4 py-1 rounded bg-red-900 w-full'>Add Entry</button>
             </Form>
         </Formik>
     )
