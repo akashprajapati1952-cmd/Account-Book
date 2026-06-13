@@ -66,6 +66,20 @@ export const userRelogin=createAsyncThunk('user/relogin',async(_,thunkAPI)=>{
         return thunkAPI.rejectWithValue("Somthing went wrong")
     }
 })
+export const deleteAccount = createAsyncThunk(
+  "user/deleteAccount",
+  async (_, thunkAPI) => {
+    try {
+      const res = await axios.delete(BASE_URL+"/user/delete-account",{headers:{authorization: `Bearer ${localStorage.getItem("token")}`}});
+
+      return res.data;
+    } catch(error){
+        if(axios.isAxiosError(error)){
+            return thunkAPI.rejectWithValue(error.response?.data.message || "Failed to delete user account")
+        }
+        return thunkAPI.rejectWithValue("Somthing went wrong")
+    }
+})
 
 const setUser = (state: UserState, user: User & { customers: Record<string, Customer> } ) => {
     const { customers, ...newUser } = user;
@@ -110,6 +124,8 @@ const userSlice = createSlice({
         }).addCase(userRelogin.fulfilled,(state,action)=>{
             state.loading= false;
             setUser(state, action.payload.user)
+        }).addCase(deleteAccount.fulfilled,(state, action)=>{
+            setUser(userSlice.initialState)
         }).addMatcher((action)=>action.type.endsWith('/pending'),(state) => {
             state.loading = true;
             state.error=null;
