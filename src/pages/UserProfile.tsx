@@ -7,6 +7,8 @@ import { Form, Formik, } from "formik";
 import { useState } from "react";
 import Button from "../components/Button";
 import * as Yup from 'yup'
+import { ImMenu } from "react-icons/im";
+import { deleteAccount, logoutAction } from "../reducers/userSlice";
 
 
 interface UserProfileProps {
@@ -14,8 +16,9 @@ interface UserProfileProps {
 }
 type Props=UserProfileProps & Redux_props
 
-function UserProfile({ user }: Props) {
+function UserProfile({ user, logoutAction, deleteAccount }: Props) {
     const [isEditing,setIsEditing]=useState(false)
+    const [isMenuOpen,setIsMenuOpen]=useState(false)
     const req='This field is required'
     const validationSchema = Yup.object({
         mobile: Yup.string().matches(/^[0-9]{10}$/, 'Invalid mobile number').required(req),
@@ -27,7 +30,21 @@ function UserProfile({ user }: Props) {
         zipCode: Yup.string().matches(/^[0-9]{6}$/, 'Invalid zip code').required(req)
     })
   return (
-    <div className="max-w-2xl mx-auto p-6 bg-white rounded-lg shadow">
+    <div className="relative max-w-2xl mx-auto p-6 bg-white rounded-lg shadow ">
+      <div className="absolute top-2 -right-4 flex flex-col gap-1">
+        <ImMenu onClick={()=>setIsMenuOpen(!isMenuOpen)} className="self-end"/>
+        {isMenuOpen && <div className="flex flex-col items-start border px-2 rounded-lg bg-gray-500" >
+          <button type="button" onClick={()=>{
+            logoutAction()
+            setIsMenuOpen(false)
+          }}>Logout</button>
+          <button type="button" className="text-red-700" onClick={()=>{
+            deleteAccount()
+            setIsMenuOpen(false)
+          }}>Delete Account</button>
+        </div>}
+      </div>
+      
       <div className="flex flex-col items-center mb-6">
         <img
           src={user.img ? user.img : "/face.png"}
@@ -85,7 +102,8 @@ const mapStateToProps=(state: State)=>({
 })
 
 const mapDispatchToProps={
-    
+    deleteAccount,
+    logoutAction
 }
 
 const connectedComp=connect(mapStateToProps,mapDispatchToProps)

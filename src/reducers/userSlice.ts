@@ -1,5 +1,5 @@
-import { createAsyncThunk, createSlice, } from "@reduxjs/toolkit";
-import type { Customer, User } from "../models";
+import { createAsyncThunk, createSlice} from "@reduxjs/toolkit";
+import type {User } from "../models";
 import axios from "axios";
 import { BASE_URL } from "../Tools/baseUrls";
 import { setCustomersAction } from "./customerSlice";
@@ -10,6 +10,7 @@ interface UserState {
     loading: boolean;
     error: string | null;
 }
+
 
 export const userSignup=createAsyncThunk('user/signup/send-otp', async(values: any,thunkAPI) => {
     try{
@@ -27,8 +28,9 @@ export const userSignup=createAsyncThunk('user/signup/send-otp', async(values: a
 export const userVerify=createAsyncThunk('user/signup/verify-otp', async(values: any,thunkAPI) => {
     try{
       const response = await axios.post(BASE_URL + '/signup/verify',{otp: values, sessionToken: sessionStorage.getItem("sessionToken")});
-      thunkAPI.dispatch(setCustomersAction(response.data.user.customers))
-      return response.data ;
+      const {customers,...user}=response.data.user
+      thunkAPI.dispatch(setCustomersAction(customers))
+      return user ;
     }catch(err){
         if(axios.isAxiosError(err)){
           return thunkAPI.rejectWithValue(err.response?.data.message || 'Failed to verify OTP');
@@ -41,8 +43,10 @@ export const userVerify=createAsyncThunk('user/signup/verify-otp', async(values:
 export const userLogin=createAsyncThunk('user/login', async(values: any,thunkAPI) => {
     try{
       const response = await axios.post(BASE_URL + '/login',values);
-      thunkAPI.dispatch(setCustomersAction(response.data.user.customers))
-      return response.data ;
+      localStorage.setItem('token',(response.data.token));
+      const {customers,...user}=response.data.user
+      thunkAPI.dispatch(setCustomersAction(customers))
+      return user ;
     }catch(err){
         
         if(axios.isAxiosError(err)){
@@ -56,8 +60,9 @@ export const userLogin=createAsyncThunk('user/login', async(values: any,thunkAPI
 export const userRelogin=createAsyncThunk('user/relogin',async(_,thunkAPI)=>{
     try{
         const response= await axios.get(BASE_URL+'/user/profile',{headers:{authorization: `Bearer ${localStorage.getItem("token")}`}})
-        thunkAPI.dispatch(setCustomersAction(response.data.user.customers))
-        return response.data
+        const {customers,...user}=response.data.user
+        thunkAPI.dispatch(setCustomersAction(customers))
+        return user ;
     
     }catch(error){
         if(axios.isAxiosError(error)){
@@ -81,11 +86,17 @@ export const deleteAccount = createAsyncThunk(
     }
 })
 
-const setUser = (state: UserState, user: User & { customers: Record<string, Customer> } ) => {
-    const { customers, ...newUser } = user;
-    for (const key in newUser) {
-      (state.user as any)[key] = (newUser as any)[key];
+const setUser = (state: UserState, user: User ) => {
+
+    
+    for (const key in user) {
+      (state.user as any)[key] = (user as any)[key];
     }
+}
+
+const logout= (state: UserState)=>{
+    localStorage.removeItem("token")
+    setUser(state,userSlice.getInitialState().user)
 }
 
 
@@ -107,25 +118,25 @@ const userSlice = createSlice({
         error: null
     } as UserState,
     reducers: {
+        logout
     },
     extraReducers: (builder) => {
         
         builder.addCase(userSignup.fulfilled, (state, action) => {
             sessionStorage.setItem('sessionToken', (action.payload.sessionToken));
             state.loading = false;
-            setUser(state, action.payload.user);
         }).addCase(userVerify.fulfilled, (state, action) => {
             state.loading = false;
-            setUser(state, action.payload.user);
+            setUser(state, action.payload);
         }).addCase(userLogin.fulfilled, (state, action) => {
             state.loading = false;
-            localStorage.setItem('token',(action.payload.token));
-            setUser(state, action.payload.user);
+            setUser(state, action.payload);
         }).addCase(userRelogin.fulfilled,(state,action)=>{
             state.loading= false;
-            setUser(state, action.payload.user)
-        }).addCase(deleteAccount.fulfilled,(state, action)=>{
-            setUser(userSlice.initialState)
+            setUser(state, action.payload)
+        }).addCase(deleteAccount.fulfilled,(state)=>{
+            const initialUser=userSlice.getInitialState().user
+            setUser(state,initialUser)
         }).addMatcher((action)=>action.type.endsWith('/pending'),(state) => {
             state.loading = true;
             state.error=null;
@@ -137,5 +148,5 @@ const userSlice = createSlice({
     }
 })
 
-
+export  const {logout: logoutAction}=userSlice.actions
 export default userSlice.reducer;
