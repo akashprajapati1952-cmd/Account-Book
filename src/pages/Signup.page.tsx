@@ -30,8 +30,8 @@ function Signup({user, createUser, verifyUser}: Redux_props){
       confirmPassword: Yup.string().oneOf([Yup.ref('password')], 'Passwords must match').required(req),
       gender:Yup.string().matches(/^(male|female|other)$/, 'Invalid gender').required(req),
       name: Yup.string().required(req),
-      bussinessName: Yup.string().required(req),
-      bussinessType: Yup.string().matches(/^(retail|wholesale|service)$/, 'Invalid business type').required(req),
+      businessName: Yup.string().required(req),
+      businessType: Yup.string().required(req),
       address: Yup.string().required(req),
       zipCode: Yup.string().matches(/^[0-9]{6}$/, 'Invalid zip code').required(req)
     })
@@ -41,8 +41,8 @@ function Signup({user, createUser, verifyUser}: Redux_props){
       {name:'gender', type: "select",placeholder: 'Select your gender', label:'Gender'},
       {name:'mobile', type:'text', placeholder:'Enter you mobile number',label:'Mobile Number'},
       {name:'email',  type:'email', placeholder: "Enter your email", label:'Email'},
-      {name:'bussinessName', type:'text', placeholder:'Enter your bussiness name',label:'Bussiness Name'},
-      {name:'bussinessType',type:'select',placeholder:'Select your bussiness type',label:"Bussiness Type"},
+      {name:'businessName', type:'text', placeholder:'Enter your business name',label:'Business Name'},
+      {name:'businessType',type:'select',placeholder:'Select your business type',label:"Business Type"},
       {name:'address', type:'text',placeholder:"Enter your address",label:'Address'},
       {name:'zipCode',type:'text',placeholder:'Enter your zip code',label:'ZIP Code'},
       {name:"password", type:'password', placeholder:'Create a strong password', label:'Password'},

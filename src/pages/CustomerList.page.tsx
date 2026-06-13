@@ -9,6 +9,7 @@ import { userSelector } from "../selectors/userSelectors"
 import { useEffect, useState } from "react"
 import Custommer from "../components/Customer"
 import { ImCross } from "react-icons/im";
+import * as Yup from 'yup'
 
 function CustomerList({customers, addCustomer,user}: Redux_props) {
 
@@ -29,6 +30,10 @@ function CustomerList({customers, addCustomer,user}: Redux_props) {
         {!isAdding && <button type="button" onClick={()=>setIsAdding(!isAdding)} className="bg-indigo-600 w-full p-1 rounded-md absolute bottom-0 "><b>Add Customer</b></button>}
         {isAdding && <Formik
           initialValues={{name: '', mobile: ''}}
+          validationSchema={Yup.object({
+            name: Yup.string().required(),
+            mobile: Yup.string().matches(/^[0-9]{10}$/,"Mobile number should be 10 digits long").required()
+          })}
           onSubmit={handleSubmit}
           
         >

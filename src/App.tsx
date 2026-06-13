@@ -1,14 +1,16 @@
 import { Route, Routes } from 'react-router-dom';
 import Signup from './pages/Signup.page';
 import Login from './pages/Login.page';
-import ProtectedRoutes from './Tools/ProtectedRoutes';
+import ProtectedRoutes from './Tools_And_Data/ProtectedRoutes';
 import CustomerList from './pages/CustomerList.page';
 import Header from './components/Header';
 import { useAppDispatch } from './store/store';
 import { useEffect } from 'react';
 import { userRelogin } from './reducers/userSlice';
-import CustomerTxns from './pages/CustomerTxns';
-import UserProfile from './pages/UserProfile';
+import CustomerTxns from './pages/CustomerTxns.page';
+import UserProfile from './pages/UserProfile.page';
+import ForgotPasswordPage from './pages/ForgotPassword.page';
+import Test from './components/Test';
 
  
 
@@ -23,8 +25,10 @@ function App() {
       <Header/>
       <div className='flex flex-col h-[calc(100%-60px)] w-full '>
       <Routes>
+        <Route path='/test' element={<Test/>}/>
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
+        <Route path="/forgotPassword" element={<ForgotPasswordPage />} />
         <Route element={<ProtectedRoutes/>}>
           <Route path='/' element={<CustomerList/>}/>
           <Route path="/customer/:customerId" element={<CustomerTxns/>}/>

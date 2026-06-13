@@ -1,6 +1,6 @@
 import { createAsyncThunk, createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import type { Customer, CustomersWithId } from "../models";
-import { BASE_URL } from "../Tools/baseUrls";
+import { BASE_URL } from "../Tools_And_Data/baseUrls";
 import axios from "axios";
 
 
@@ -61,8 +61,12 @@ export const addGiven=createAsyncThunk('customer/add-give',async({ customerId, v
 
 const setCustomers=(state: CustomerState, action: PayloadAction<Record<string, Customer>>)=>{
     const customers=action.payload
-    const customersWithId=Object.fromEntries(Object.entries(customers).map(([id,customer])=>([id,{customerId: id,...customer}])))
-    Object.assign(state.customers, customersWithId);
+    state.customers = Object.fromEntries(
+    Object.entries(customers).map(([id, customer]) => [
+      id,
+      { customerId: id, ...customer },
+    ])
+    )
 }
 const customerSlice=createSlice({
     name: 'customer',

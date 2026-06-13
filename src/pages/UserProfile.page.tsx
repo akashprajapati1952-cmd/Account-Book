@@ -10,6 +10,7 @@ import * as Yup from 'yup'
 import { ImMenu } from "react-icons/im";
 import { deleteAccount, logoutAction, updateUser} from "../reducers/userSlice";
 import { setCustomersAction } from "../reducers/customerSlice";
+import ChangeEmail from "../components/ChangeEmail";
 
 
 interface UserProfileProps {
@@ -17,35 +18,35 @@ interface UserProfileProps {
 }
 type Props=UserProfileProps & Redux_props
 
-function UserProfile({ user, logoutAction,updateUser, deleteAccount,setCustomersAction }: Props) {
+function UserProfile({ user, logoutAction,updateUser, deleteAccount}: Props) {
     const [isEditing,setIsEditing]=useState(false)
     const [isMenuOpen,setIsMenuOpen]=useState(false)
+    const [isDeleting, setIsDeleting]=useState(false)
+    const [isEditionEmail, setIsEditingEmail]=useState(false)
     const req='This field is required'
     const validationSchema = Yup.object({
         mobile: Yup.string().matches(/^[0-9]{10}$/, 'Invalid mobile number').required(req),
         gender:Yup.string().required(req),
         name: Yup.string().required(req),
-        bussinessName: Yup.string().required(req),
-        bussinessType: Yup.string().required(req),
+        businessName: Yup.string().required(req),
+        businessType: Yup.string().required(req),
         address: Yup.string().required(req),
         zipCode: Yup.string().matches(/^[0-9]{6}$/, 'Invalid zip code').required(req)
     })
   return (
-    <div className="relative max-w-2xl mx-auto p-6 bg-white rounded-lg shadow ">
-      <div className="absolute top-2 -right-4 flex flex-col gap-1">
+    <div className=" max-w-2xl mx-auto p-6 bg-white rounded-lg shadow ">
+      <div className="absolute top-17 right-2 flex flex-col gap-1">
         <ImMenu onClick={()=>setIsMenuOpen(!isMenuOpen)} className="self-end"/>
         {isMenuOpen && <div className="flex flex-col items-start border px-2 rounded-lg bg-gray-500" >
           <button type="button" onClick={()=>{
             logoutAction()
-            setCustomersAction({})
             setIsMenuOpen(false)
             
           }}>Logout</button>
           <button type="button" className="text-red-700" onClick={()=>{
-            deleteAccount()
-            setCustomersAction({})
+            setIsDeleting(true)
             setIsMenuOpen(false)
-          }}>Delete Account</button>
+            }}>Delete Account</button>
         </div>}
       </div>
       
@@ -58,18 +59,31 @@ function UserProfile({ user, logoutAction,updateUser, deleteAccount,setCustomers
         <h2 className="text-2xl font-bold mt-3">{user.name}</h2>
         <p className="text-gray-500">{user.email}</p>
       </div>
+      {isDeleting && <div className="absolute top-1/2 left-[calc(50%-140px)] w-70 bg-red-700 p-2 rounded-lg space-y-2">
+                <p className="text-center text-xl">Are you sure to delete your account?</p>
+                <div className="flex gap-2">
+                  <Button type="button" handleClick={()=>{
+                    deleteAccount()
+                    setIsDeleting(false)
+                  }}>Delete</Button>
+                  <Button type="button" handleClick={()=>setIsDeleting(false)}>Back</Button>
+                </div>
+              </div>}
       <Formik
         initialValues={{name: user.name, mobile:user.mobile,gender:user.gender,businessName:user.businessName,businessType:user.businessType,address:user.address,zipCode:user.zipCode}}
-        onSubmit={(values)=>updateUser(values)}
+        onSubmit={(values)=>{
+          updateUser(values)
+          setIsEditing(false)
+        }}
         validationSchema={validationSchema}
       >
         {({dirty, resetForm})=>(
         <Form className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <ProfileField label='Name' name="name" readOnly={!isEditing}/>
           <ProfileField label="Mobile" name="mobile" readOnly={!isEditing} />
-          <ProfileField label="Gender" name="gender" readOnly={!isEditing} />
+          <ProfileField label="Gender" name="gender" type="select" readOnly={!isEditing} />
           <ProfileField label="Business Name" name="businessName" readOnly={!isEditing} />
-          <ProfileField label="Business Type" name="businessType" readOnly={!isEditing} />
+          <ProfileField label="Business Type" type="select" name="businessType" readOnly={!isEditing} />
           <ProfileField label="Address" name="address" readOnly={!isEditing} />
           <ProfileField label="Zip Code" name="zipCode" readOnly={!isEditing} />
           {!isEditing && <Button type='button' handleClick={()=>setIsEditing(true)}>Edit</Button>}
@@ -80,6 +94,7 @@ function UserProfile({ user, logoutAction,updateUser, deleteAccount,setCustomers
           }}>Discard</Button>}
         </Form>)}
       </Formik>
+      {isEditionEmail && <ChangeEmail/>}
     </div>
   );
 }
@@ -87,16 +102,18 @@ function UserProfile({ user, logoutAction,updateUser, deleteAccount,setCustomers
 function ProfileField({
   label,
   name,
-  readOnly
+  readOnly,
+  type
 }: {
   label: string;
   name: string;
-  readOnly: boolean
+  readOnly: boolean;
+  type?: string
 }) {
   return (
     <div className="border rounded p-3">
       <label htmlFor="value" className="sr-only">{label}</label>
-      <FormikInput name={name} label={label} type="text" className="font-medium border-none" readonly={readOnly} placeholder="Not Provided"/>
+      <FormikInput name={name} label={label} type={type ? type : "text"} className="font-medium border-none" readonly={readOnly} placeholder="Not Provided"/>
     </div>
   );
 }

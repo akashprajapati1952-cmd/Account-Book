@@ -46,6 +46,7 @@ function Login({user, loadUser}: Redux_props){
                 <h1 className='self-center text-xl'><b>Login with Account Book</b></h1>
                 {fields.map(field=><FormikInput key={field.name} type={field.type} name={field.name} placeholder={field.placeholder} label={field.label}/>)}
                 <button type="submit" className=' text-white px-4 py-1 rounded bg-red-900 w-full'>Login</button>
+                <Link to="/forgotPassword" className='text-sm text-blue-500'>Forget Password?</Link>
                 <Link to="/signup" className='text-sm text-blue-500'>Don't have an account? Sign up</Link>
             </Form>
         </Formik>

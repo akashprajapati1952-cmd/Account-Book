@@ -1,7 +1,7 @@
 import { createAsyncThunk, createSlice} from "@reduxjs/toolkit";
 import type {User } from "../models";
 import axios from "axios";
-import { BASE_URL } from "../Tools/baseUrls";
+import { BASE_URL } from "../Tools_And_Data/baseUrls";
 import { setCustomersAction } from "./customerSlice";
 
 
@@ -11,8 +11,61 @@ interface UserState {
     error: string | null;
 }
 
+export const getEmailChangeOtp=createAsyncThunk('user/change-email/send-otp', async(values: any,thunkAPI) => {
+    try{
+      const response = await axios.post(BASE_URL + '/user/change-email/send-otp',values,{headers:{authorization: `Bearer ${localStorage.getItem("token")}`}});
+      return response.data.message ;
+    }catch(err){
+        if(axios.isAxiosError(err)){
+          return thunkAPI.rejectWithValue(err.response?.data.message || 'Failed to send otp');
+        }
+        return thunkAPI.rejectWithValue('Something went wrong')
+        
+    }
+});
+
+export const verifyEmailChangeOtp=createAsyncThunk('user/change-email/verify', async(values: any,thunkAPI) => {
+    try{
+      const response = await axios.post(BASE_URL + '/user/change-email/verify',values,{headers:{authorization: `Bearer ${localStorage.getItem("token")}`}});
+      return response.data ;
+    }catch(err){
+        if(axios.isAxiosError(err)){
+          return thunkAPI.rejectWithValue(err.response?.data.message || 'Failed to verify otp');
+        }
+        return thunkAPI.rejectWithValue('Something went wrong')
+        
+    }
+}); 
+
+export const getForgetPasswordOtp=createAsyncThunk('user/forgot-password/send-otp', async(values: any,thunkAPI) => {
+    try{
+      const response = await axios.post(BASE_URL + '/forgot-password/send-otp',values,{headers:{authorization: `Bearer ${localStorage.getItem("token")}`}});
+      return response.data.message ;
+    }catch(err){
+        if(axios.isAxiosError(err)){
+          return thunkAPI.rejectWithValue(err.response?.data.message || 'Failed to send otp');
+        }
+        return thunkAPI.rejectWithValue('Something went wrong')
+        
+    }
+});
+
+export const verifyForgetPasswordOtp=createAsyncThunk('user/forgot-password/verify', async(values: any,thunkAPI) => {
+    try{
+      const response = await axios.post(BASE_URL + '/forgot-password/verify',values,{headers:{authorization: `Bearer ${localStorage.getItem("token")}`}});
+      return response.data.message ;
+    }catch(err){
+        if(axios.isAxiosError(err)){
+          return thunkAPI.rejectWithValue(err.response?.data.message || 'Failed to verify otp');
+        }
+        return thunkAPI.rejectWithValue('Something went wrong')
+        
+    }
+}); 
+
 export const updateUser=createAsyncThunk('user/update-profile', async(values: any,thunkAPI) => {
     try{
+        console.log('thunk rendered')
       const response = await axios.put(BASE_URL + '/user/update-profile',values,{headers:{authorization: `Bearer ${localStorage.getItem("token")}`}});
       return response.data.user ;
     }catch(err){
@@ -40,6 +93,7 @@ export const userSignup=createAsyncThunk('user/signup/send-otp', async(values: a
 export const userVerify=createAsyncThunk('user/signup/verify-otp', async(values: any,thunkAPI) => {
     try{
       const response = await axios.post(BASE_URL + '/signup/verify',{otp: values, sessionToken: sessionStorage.getItem("sessionToken")});
+      localStorage.setItem('token',(response.data.token))
       const {customers,...user}=response.data.user
       thunkAPI.dispatch(setCustomersAction(customers))
       return user ;
@@ -83,12 +137,13 @@ export const userRelogin=createAsyncThunk('user/relogin',async(_,thunkAPI)=>{
         return thunkAPI.rejectWithValue("Somthing went wrong")
     }
 })
+
 export const deleteAccount = createAsyncThunk(
   "user/deleteAccount",
   async (_, thunkAPI) => {
     try {
       const res = await axios.delete(BASE_URL+"/user/delete-account",{headers:{authorization: `Bearer ${localStorage.getItem("token")}`}});
-
+      thunkAPI.dispatch(setCustomersAction({}))
       return res.data;
     } catch(error){
         if(axios.isAxiosError(error)){
@@ -99,8 +154,6 @@ export const deleteAccount = createAsyncThunk(
 })
 
 const setUser = (state: UserState, user: User ) => {
-
-    
     for (const key in user) {
       (state.user as any)[key] = (user as any)[key];
     }
@@ -141,7 +194,8 @@ const userSlice = createSlice({
             state.loading = false;
             setUser(state, action.payload);
         }).addCase(updateUser.fulfilled,(state,action)=>{
-          setUser(state,action.payload)
+            state.loading=false
+            setUser(state,action.payload)
         }).addCase(userLogin.fulfilled, (state, action) => {
             state.loading = false;
             setUser(state, action.payload);
@@ -149,8 +203,22 @@ const userSlice = createSlice({
             state.loading= false;
             setUser(state, action.payload)
         }).addCase(deleteAccount.fulfilled,(state)=>{
+            state.loading=false
             const initialUser=userSlice.getInitialState().user
             setUser(state,initialUser)
+        }).addCase(getForgetPasswordOtp.fulfilled,(state,action)=>{
+            state.loading=false;
+            state.error=action.payload
+        }).addCase(verifyForgetPasswordOtp.fulfilled,(state,action)=>{
+            state.loading=false;
+            state.error=action.payload
+        }).addCase(getEmailChangeOtp.fulfilled,(state,action)=>{
+            state.loading=false;
+            state.error=action.payload
+        }).addCase(verifyEmailChangeOtp.fulfilled,(state,action)=>{
+            state.loading=false;
+            state.error=action.payload.message;
+            setUser(state,action.payload.user)
         }).addMatcher((action)=>action.type.endsWith('/pending'),(state) => {
             state.loading = true;
             state.error=null;
