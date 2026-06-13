@@ -8,7 +8,8 @@ import { useState } from "react";
 import Button from "../components/Button";
 import * as Yup from 'yup'
 import { ImMenu } from "react-icons/im";
-import { deleteAccount, logoutAction } from "../reducers/userSlice";
+import { deleteAccount, logoutAction, updateUser} from "../reducers/userSlice";
+import { setCustomersAction } from "../reducers/customerSlice";
 
 
 interface UserProfileProps {
@@ -16,7 +17,7 @@ interface UserProfileProps {
 }
 type Props=UserProfileProps & Redux_props
 
-function UserProfile({ user, logoutAction, deleteAccount }: Props) {
+function UserProfile({ user, logoutAction,updateUser, deleteAccount,setCustomersAction }: Props) {
     const [isEditing,setIsEditing]=useState(false)
     const [isMenuOpen,setIsMenuOpen]=useState(false)
     const req='This field is required'
@@ -36,10 +37,13 @@ function UserProfile({ user, logoutAction, deleteAccount }: Props) {
         {isMenuOpen && <div className="flex flex-col items-start border px-2 rounded-lg bg-gray-500" >
           <button type="button" onClick={()=>{
             logoutAction()
+            setCustomersAction({})
             setIsMenuOpen(false)
+            
           }}>Logout</button>
           <button type="button" className="text-red-700" onClick={()=>{
             deleteAccount()
+            setCustomersAction({})
             setIsMenuOpen(false)
           }}>Delete Account</button>
         </div>}
@@ -56,7 +60,7 @@ function UserProfile({ user, logoutAction, deleteAccount }: Props) {
       </div>
       <Formik
         initialValues={{name: user.name, mobile:user.mobile,gender:user.gender,businessName:user.businessName,businessType:user.businessType,address:user.address,zipCode:user.zipCode}}
-        onSubmit={(values)=>console.log(values)}
+        onSubmit={(values)=>updateUser(values)}
         validationSchema={validationSchema}
       >
         {({dirty, resetForm})=>(
@@ -103,7 +107,9 @@ const mapStateToProps=(state: State)=>({
 
 const mapDispatchToProps={
     deleteAccount,
-    logoutAction
+    logoutAction,
+    setCustomersAction,
+    updateUser
 }
 
 const connectedComp=connect(mapStateToProps,mapDispatchToProps)

@@ -11,6 +11,18 @@ interface UserState {
     error: string | null;
 }
 
+export const updateUser=createAsyncThunk('user/update-profile', async(values: any,thunkAPI) => {
+    try{
+      const response = await axios.put(BASE_URL + '/user/update-profile',values,{headers:{authorization: `Bearer ${localStorage.getItem("token")}`}});
+      return response.data.user ;
+    }catch(err){
+        if(axios.isAxiosError(err)){
+          return thunkAPI.rejectWithValue(err.response?.data.message || 'Failed to update user account');
+        }
+        return thunkAPI.rejectWithValue('Something went wrong')
+        
+    }
+});
 
 export const userSignup=createAsyncThunk('user/signup/send-otp', async(values: any,thunkAPI) => {
     try{
@@ -128,6 +140,8 @@ const userSlice = createSlice({
         }).addCase(userVerify.fulfilled, (state, action) => {
             state.loading = false;
             setUser(state, action.payload);
+        }).addCase(updateUser.fulfilled,(state,action)=>{
+          setUser(state,action.payload)
         }).addCase(userLogin.fulfilled, (state, action) => {
             state.loading = false;
             setUser(state, action.payload);
