@@ -3,13 +3,15 @@ import { configureStore} from "@reduxjs/toolkit";
 import UserReducer from "../reducers/userSlice";
 import customersReducer from "../reducers/customerSlice";
 import { useDispatch, useSelector, type TypedUseSelectorHook } from "react-redux";
+import dashboardReducer from "../reducers/dashboardSlice";
 
 
 const store=configureStore({
     
     reducer:{
       user: UserReducer,
-      customers: customersReducer
+      customers: customersReducer,
+      dashboard: dashboardReducer
     },
     devTools: import.meta.env.DEV,
 })

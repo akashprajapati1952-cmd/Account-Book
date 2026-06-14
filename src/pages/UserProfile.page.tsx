@@ -43,6 +43,7 @@ function UserProfile({ user, logoutAction,updateUser, deleteAccount}: Props) {
         <ImMenu onClick={()=>setIsMenuOpen(!isMenuOpen)} className="self-end"/>
         {isMenuOpen && <div className="flex flex-col items-start border px-2 rounded-lg bg-gray-500" >
           <Link to="/">Customers</Link>
+          <Link to="/dashboard">Dashboard</Link>
           <button type="button" onClick={()=>{
             logoutAction()
             setIsMenuOpen(false)

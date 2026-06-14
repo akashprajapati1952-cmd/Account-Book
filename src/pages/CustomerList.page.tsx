@@ -3,7 +3,10 @@ import type { CustomersWithId } from "../models"
 import { customerListSelector} from "../selectors/customerSelectors"
 import type { State } from "../store/store"
 import { Form, Formik } from "formik"
-import { addCustomer } from "../reducers/customerSlice"
+import { 
+  addCustomer,
+  searchCustomer
+} from "../reducers/customerSlice"
 import FormikInput from "../components/FormikInput"
 import { userSelector } from "../selectors/userSelectors"
 import { useEffect, useState } from "react"
@@ -11,12 +14,17 @@ import Custommer from "../components/Customer"
 import { ImCross } from "react-icons/im";
 import * as Yup from 'yup'
 
-function CustomerList({customers, addCustomer,user}: Redux_props) {
+function CustomerList({
+  customers,
+  addCustomer,
+  searchCustomer,
+  user,
+  searchResults
+}: Redux_props) {
 
   const [isAdding, setIsAdding]=useState(false)
-  useEffect(()=>{
-    localStorage.setItem(user.mobile,JSON.stringify(customers))
-    },[customers,user])
+  const [search,setSearch]=useState("");
+  const displayCustomers =search.trim() ? Object.values(searchResults || {}) : customers || [];
 
     function handleSubmit(values: any){
        addCustomer({values,message: "Adding Customer"});
@@ -24,8 +32,26 @@ function CustomerList({customers, addCustomer,user}: Redux_props) {
        
     }
     return ( <main className="h-full w-full relative ">
-        {customers.length !== 0 ? <section className="flex flex-col items-center p-2 gap-2">
-            {customers.map((c: CustomersWithId)=><Custommer key={c.name} customer={c} total={c.totalTake- c.totalGive}/>)}
+        <div className="p-2">
+
+          <input
+              type="text"
+              placeholder="Search customer..."
+              value={search}
+              onChange={(e)=>{
+                const value=e.target.value;
+                setSearch(value);
+                if(value.trim()){
+                  searchCustomer({query:value});
+                }
+                
+              }}
+              className="border p-2 rounded-md w-full"
+          />
+
+        </div>
+        {displayCustomers.length !== 0 ? <section className="flex flex-col items-center p-2 gap-2">
+            {displayCustomers.map((c: CustomersWithId)=><Custommer key={c.name} customer={c} total={c.totalTake- c.totalGive}/>)}
         </section>:<div>No customers found</div>}
         {!isAdding && <button type="button" onClick={()=>setIsAdding(!isAdding)} className="bg-indigo-600 w-full p-1 rounded-md absolute bottom-0 "><b>Add Customer</b></button>}
         {isAdding && <Formik
@@ -47,11 +73,21 @@ function CustomerList({customers, addCustomer,user}: Redux_props) {
     </main>) 
 }
 const mapStateToProps=(state: State)=>({
-  customers: customerListSelector(state),
-  user: userSelector(state)
+
+ customers: customerListSelector(state),
+
+ user:userSelector(state),
+
+ searchResults:
+ state.customer.searchResults
+
 })
 const mapDispatchToProps={
-  addCustomer,
+
+ addCustomer,
+
+ searchCustomer
+
 }
 
 const connectedComp=connect(mapStateToProps,mapDispatchToProps)

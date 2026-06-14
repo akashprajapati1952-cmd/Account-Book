@@ -16,6 +16,7 @@ import { connect, type ConnectedProps } from 'react-redux';
 import { removeCustomerErrorAction } from './reducers/customerSlice';
 import { customerErrorSelector } from './selectors/customerSelectors';
 import { userErrorSelector } from './selectors/userSelectors';
+import Dashboard from "./pages/Dashboard.page";
 
  
 
@@ -38,6 +39,7 @@ function App({userMessage, removeUserError,customerMessage,removeCustomerError}:
         <Route path="/forgotPassword" element={<ForgotPasswordPage />} />
         <Route element={<ProtectedRoutes/>}>
           <Route path='/' element={<CustomerList/>}/>
+          <Route path="/dashboard" element={<Dashboard/>}/>
           <Route path="/customer/:customerId" element={<CustomerTxns/>}/>
           <Route path='/userProfile' element={<UserProfile/>}/>
         </Route>

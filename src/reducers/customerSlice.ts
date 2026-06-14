@@ -4,8 +4,21 @@ import { BASE_URL } from "../Tools_And_Data/baseUrls";
 import axios from "axios";
 
 
-type CustomerState={ customers: Record<string, CustomersWithId>; loading: boolean, error: {message: string | null; type: string | null}}
-const initialState: CustomerState = { customers: {}, loading: false, error: {message: null, type: null} };
+type CustomerState={
+ customers: Record<string, CustomersWithId>;
+ searchResults: Record<string, CustomersWithId>;
+ loading:boolean;
+ error:{message:string|null; type:string|null}
+}
+const initialState={
+ customers:{},
+ searchResults:{},
+ loading:false,
+ error:{
+  message:null,
+  type:null
+ }
+}
 
 export const deleteCustomer=createAsyncThunk('customer/delete',async({customerId}:{customerId: string; message: string},thunkAPI)=>{
     try{
@@ -31,6 +44,45 @@ export const addCustomer=createAsyncThunk('customer/add', async({values}:{values
         return thunkAPI.rejectWithValue('Something went wrong')
     }
 });
+
+export const searchCustomer = createAsyncThunk(
+  "customer/search",
+  async(
+    {query}:{query:string},
+    thunkAPI
+  )=>{
+
+    try{
+
+      const response = await axios.get(
+        `${BASE_URL}/customer/search?q=${query}`,
+        {
+          headers:{
+            Authorization:
+            `Bearer ${localStorage.getItem("token")}`
+          }
+        }
+      );
+
+      return response.data;
+
+    }catch(error){
+
+      if(axios.isAxiosError(error)){
+        return thunkAPI.rejectWithValue(
+          error.response?.data.message ||
+          "Search failed"
+        );
+      }
+
+      return thunkAPI.rejectWithValue(
+        "Something went wrong"
+      );
+
+    }
+
+  }
+);
 
 export const addTaken=createAsyncThunk('customer/add-take',async({ customerId, values }: { customerId: string; values: any ,message:string}, thunkAPI)=>{
     try{
@@ -103,7 +155,13 @@ const customerSlice=createSlice({
         }).addCase(deleteCustomer.fulfilled,(state,action)=>{
             delete state.customers[action.payload.customerId]
             state.error={type:"success",message: action.payload.data.message}
-        })
+        }).addCase(searchCustomer.fulfilled,(state,action)=>{
+
+          state.loading=false;
+
+          state.searchResults =action.payload.customers;
+
+       })
         builder.addMatcher((action)=>action.type.startsWith("customer/") && action.type.endsWith("/pending"), (state,action) => {
             state.loading = true;
             const message=(action as any).meta.arg.message
