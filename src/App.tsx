@@ -28,8 +28,8 @@ function App({userMessage, removeUserError,customerMessage,removeCustomerError}:
   return (
     <div className='flex flex-col items-center h-dvh '>
       <Header/>
-      <Message alert={userMessage} removeAlert={removeUserError}/>
-      <Message alert={customerMessage} removeAlert={removeCustomerError}/>
+      {userMessage.message ? <Message alert={userMessage} removeAlert={removeUserError}/>:
+      <Message alert={customerMessage} removeAlert={removeCustomerError}/>}
       <div className='flex flex-col h-[calc(100%-60px)] w-full '>
       <Routes>
         <Route path='/test' element={<Test/>}/>

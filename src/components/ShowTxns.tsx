@@ -2,6 +2,7 @@ import { useState } from "react";
 import type { CustomersWithId } from "../models";
 import { ImMenu } from "react-icons/im";
 import Button from "./Button";
+import { Link } from "react-router-dom";
 
 
 function ShowTxns({customer, onClick,deleteCustomer}: {customer: CustomersWithId, onClick: ()=>void,deleteCustomer: ()=>void}){
@@ -33,17 +34,20 @@ function ShowTxns({customer, onClick,deleteCustomer}: {customer: CustomersWithId
           </h2>
           <ImMenu onClick={()=>setIsMenuOpen(!isMenuOpen)} />
         </div>
-        {isMenuOpen && <div className="absolute top-5 right-1 border-2 px-2 rounded-lg bg-gray-500">
+        {isMenuOpen && <div className="flex flex-col  absolute top-5 right-1 border-2 px-2 rounded-lg bg-gray-500">
+          <Link to="/">Customers</Link>
           <button type="button" onClick={()=>{
             setIsDeleting(true)
             setIsMenuOpen(false)
           }}>Delete Customer</button>
+          
         </div>}
         {isDeleting && <div className="absolute top-1/2 left-[calc(50%-140px)] w-70 bg-rose-700 p-2 rounded-lg space-y-2">
           <p className="text-center">Are you sure to delete customer named {customer.name}?</p>
           <div className="flex gap-2">
             <Button type="button" handleClick={deleteCustomer}>Delete</Button>
             <Button type="button" handleClick={()=>setIsDeleting(false)}>Back</Button>
+
           </div>
         </div>}
 

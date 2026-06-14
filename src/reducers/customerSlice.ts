@@ -9,8 +9,8 @@ const initialState: CustomerState = { customers: {}, loading: false, error: {mes
 
 export const deleteCustomer=createAsyncThunk('customer/delete',async({customerId}:{customerId: string; message: string},thunkAPI)=>{
     try{
-        await axios.delete(BASE_URL+"/customer/"+customerId,{headers:{authorization: `Bearer ${localStorage.getItem('token')}`}})
-        return customerId
+        const response=await axios.delete(BASE_URL+"/customer/"+customerId,{headers:{authorization: `Bearer ${localStorage.getItem('token')}`}})
+        return {customerId,data: response.data}
     }catch(error){
         if(axios.isAxiosError(error)){
             return thunkAPI.rejectWithValue(error?.response?.data?.message || "Some Error occured")
@@ -85,26 +85,30 @@ const customerSlice=createSlice({
           const customer=action.payload
           customer.customer.customerId=customer.customerId
           state.customers[customer.customer.customerId]=customer.customer
+          state.error={type:"success", message:action.payload.message}
         }).addCase(addGiven.fulfilled,(state,action)=>{
           state.loading=false;
           const { customerId, data } = action.payload;
           const txId = data.txId;
           state.customers[customerId].moneyToGive![txId as string] = data.transaction;
           state.customers[customerId].totalGive = data.totalGive;
+          state.error={type:"success", message:data.message}
         }).addCase(addTaken.fulfilled,(state, action)=>{
           state.loading=false
           const { customerId, data } = action.payload;
           const txId = data.txId;
           state.customers[customerId].moneyToTake![txId as string] = data.transaction;
           state.customers[customerId].totalTake = data.totalTake;
+          state.error=data.message
         }).addCase(deleteCustomer.fulfilled,(state,action)=>{
-            delete state.customers[action.payload]
+            delete state.customers[action.payload.customerId]
+            state.error={type:"success",message: action.payload.data.message}
         })
-        builder.addMatcher((action)=>action.type.endsWith("/pending"), (state,action) => {
+        builder.addMatcher((action)=>action.type.startsWith("customer/") && action.type.endsWith("/pending"), (state,action) => {
             state.loading = true;
             const message=(action as any).meta.arg.message
             state.error={type:"warning",message};
-        }).addMatcher((action)=>action.type.endsWith("/rejected"), (state, action) => {
+        }).addMatcher((action)=>action.type.startsWith("customer/") && action.type.endsWith("/rejected"), (state, action) => {
             state.loading = false;
             const message=(action as any).payload
             state.error={type:"error",message};

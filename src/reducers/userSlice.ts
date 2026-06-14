@@ -83,7 +83,7 @@ export const updateUser=createAsyncThunk('user/update-profile', async({values}:{
     try{
         console.log('thunk rendered')
       const response = await axios.put(BASE_URL + '/user/update-profile',values,{headers:{authorization: `Bearer ${localStorage.getItem("token")}`}});
-      return response.data.user ;
+      return response.data ;
     }catch(err){
         if(axios.isAxiosError(err)){
           return thunkAPI.rejectWithValue(err.response?.data.message || 'Failed to update user account');
@@ -112,7 +112,7 @@ export const userVerify=createAsyncThunk('user/signup/verify-otp', async({values
       localStorage.setItem('token',(response.data.token))
       const {customers,...user}=response.data.user
       thunkAPI.dispatch(setCustomersAction(customers))
-      return user ;
+      return {user,message: response.data.message} ;
     }catch(err){
         if(axios.isAxiosError(err)){
           return thunkAPI.rejectWithValue(err.response?.data.message || 'Failed to verify OTP');
@@ -128,7 +128,7 @@ export const userLogin=createAsyncThunk('user/login', async({values}:{values: an
       localStorage.setItem('token',(response.data.token));
       const {customers,...user}=response.data.user
       thunkAPI.dispatch(setCustomersAction(customers))
-      return user ;
+      return {user,message: response.data.message} 
     }catch(err){
         
         if(axios.isAxiosError(err)){
@@ -144,7 +144,7 @@ export const userRelogin=createAsyncThunk('user/relogin',async({}: {message: str
         const response= await axios.get(BASE_URL+'/user/profile',{headers:{authorization: `Bearer ${localStorage.getItem("token")}`}})
         const {customers,...user}=response.data.user
         thunkAPI.dispatch(setCustomersAction(customers))
-        return user ;
+        return {user,message: response.data.message}
     
     }catch(error){
         if(axios.isAxiosError(error)){
@@ -212,21 +212,27 @@ const userSlice = createSlice({
         builder.addCase(userSignup.fulfilled, (state, action) => {
             sessionStorage.setItem('sessionToken', (action.payload.sessionToken));
             state.loading = false;
+            state.error={type:"success",message:action.payload.message}
         }).addCase(userVerify.fulfilled, (state, action) => {
             state.loading = false;
-            setUser(state, action.payload);
+            state.error={type:"success",message:action.payload.message}
+            setUser(state, action.payload.user);
         }).addCase(updateUser.fulfilled,(state,action)=>{
             state.loading=false
-            setUser(state,action.payload)
+            state.error={type:"success",message:action.payload.message}
+            setUser(state,action.payload.user)
         }).addCase(userLogin.fulfilled, (state, action) => {
             state.loading = false;
-            setUser(state, action.payload);
+            state.error={type:"success",message:action.payload.message}
+            setUser(state, action.payload.user);
         }).addCase(userRelogin.fulfilled,(state,action)=>{
             state.loading= false;
-            setUser(state, action.payload)
-        }).addCase(deleteAccount.fulfilled,(state)=>{
+            state.error={type:"success",message:action.payload.message}
+            setUser(state, action.payload.user)
+        }).addCase(deleteAccount.fulfilled,(state,action)=>{
             state.loading=false
             const initialUser=userSlice.getInitialState().user
+            state.error={type:"success",message:action.payload.message}
             setUser(state,initialUser)
         }).addCase(getForgetPasswordOtp.fulfilled,(state,action)=>{
             state.loading=false;
@@ -250,12 +256,12 @@ const userSlice = createSlice({
             state.error.type="success"
             state.error.message=action.payload.message;
             setUser(state,action.payload.user)
-        }).addMatcher((action)=>action.type.endsWith('/pending'),(state, action) => {
+        }).addMatcher((action)=>action.type.startsWith("user/") && action.type.endsWith('/pending'),(state, action) => {
             state.loading = true;
             const message=(action as any).meta.arg.message
             state.error.message=message;
             state.error.type="warning"
-        }).addMatcher((action)=>action.type.endsWith('/rejected'),(state, action) => {
+        }).addMatcher((action)=>action.type.startsWith("user/") && action.type.endsWith('/rejected'),(state, action) => {
             state.loading = false;
             const message=(action as any).paylaod
             state.error.message=message || "Some error occured";

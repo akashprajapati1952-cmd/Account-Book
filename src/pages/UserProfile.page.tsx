@@ -13,6 +13,7 @@ import { setCustomersAction } from "../reducers/customerSlice";
 import ChangeEmail from "../components/ChangeEmail";
 import { FaEdit } from "react-icons/fa";
 import ChangeImg from "../components/ChangeImg";
+import { Link } from "react-router-dom";
 
 
 interface UserProfileProps {
@@ -41,6 +42,7 @@ function UserProfile({ user, logoutAction,updateUser, deleteAccount}: Props) {
       <div className="absolute top-17 right-2 flex flex-col gap-1">
         <ImMenu onClick={()=>setIsMenuOpen(!isMenuOpen)} className="self-end"/>
         {isMenuOpen && <div className="flex flex-col items-start border px-2 rounded-lg bg-gray-500" >
+          <Link to="/">Customers</Link>
           <button type="button" onClick={()=>{
             logoutAction()
             setIsMenuOpen(false)
@@ -50,6 +52,7 @@ function UserProfile({ user, logoutAction,updateUser, deleteAccount}: Props) {
             setIsDeleting(true)
             setIsMenuOpen(false)
             }}>Delete Account</button>
+            
         </div>}
       </div>
       
@@ -76,6 +79,7 @@ function UserProfile({ user, logoutAction,updateUser, deleteAccount}: Props) {
                     setIsDeleting(false)
                   }}>Delete</Button>
                   <Button type="button" handleClick={()=>setIsDeleting(false)}>Back</Button>
+                  
                 </div>
               </div>}
       <Formik
