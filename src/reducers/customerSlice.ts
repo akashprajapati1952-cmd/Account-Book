@@ -4,10 +4,10 @@ import { BASE_URL } from "../Tools_And_Data/baseUrls";
 import axios from "axios";
 
 
-type CustomerState={ customers: Record<string, CustomersWithId>; loading: boolean, error: string | null}
-const initialState: CustomerState = { customers: {}, loading: false, error: null };
+type CustomerState={ customers: Record<string, CustomersWithId>; loading: boolean, error: {message: string | null; type: string | null}}
+const initialState: CustomerState = { customers: {}, loading: false, error: {message: null, type: null} };
 
-export const deleteCustomer=createAsyncThunk('customer/delete',async(customerId: string,thunkAPI)=>{
+export const deleteCustomer=createAsyncThunk('customer/delete',async({customerId}:{customerId: string; message: string},thunkAPI)=>{
     try{
         await axios.delete(BASE_URL+"/customer/"+customerId,{headers:{authorization: `Bearer ${localStorage.getItem('token')}`}})
         return customerId
@@ -20,7 +20,7 @@ export const deleteCustomer=createAsyncThunk('customer/delete',async(customerId:
     }
 })
 
-export const addCustomer=createAsyncThunk('customer/add', async(values: any,thunkAPI) => {
+export const addCustomer=createAsyncThunk('customer/add', async({values}:{values: any; message: string},thunkAPI) => {
     try{
       const response = await axios.post(BASE_URL + '/customer/save',{customer:values},{headers: {Authorization: `Bearer ${localStorage.getItem('token')}`}});
       return response.data;
@@ -32,7 +32,7 @@ export const addCustomer=createAsyncThunk('customer/add', async(values: any,thun
     }
 });
 
-export const addTaken=createAsyncThunk('customer/add-take',async({ customerId, values }: { customerId: string; values: any }, thunkAPI)=>{
+export const addTaken=createAsyncThunk('customer/add-take',async({ customerId, values }: { customerId: string; values: any ,message:string}, thunkAPI)=>{
     try{
 
         const response= await axios.post(BASE_URL+'/customer/'+customerId+"/add-take",{...values,date: new Date().toISOString().split("T")[0]},{headers:{authorization:`Bearer ${localStorage.getItem('token')}`}})
@@ -45,7 +45,7 @@ export const addTaken=createAsyncThunk('customer/add-take',async({ customerId, v
     }
 })
 
-export const addGiven=createAsyncThunk('customer/add-give',async({ customerId, values }: { customerId: string; values: any }, thunkAPI)=>{
+export const addGiven=createAsyncThunk('customer/add-give',async({ customerId, values }: { customerId: string; values: any, message: string }, thunkAPI)=>{
     try{
        
         const response= await axios.post(BASE_URL+'/customer/'+customerId+"/add-give",{...values,date: new Date().toISOString().split("T")[0]},{headers:{authorization:`Bearer ${localStorage.getItem('token')}`}})
@@ -68,11 +68,16 @@ const setCustomers=(state: CustomerState, action: PayloadAction<Record<string, C
     ])
     )
 }
+
+const removeError=(state: CustomerState)=>{
+    state.error={message: null,type: null}
+}
 const customerSlice=createSlice({
     name: 'customer',
     initialState,
     reducers: {
-      setCustomers
+      setCustomers,
+      removeError
     },
     extraReducers: (builder) => {
         builder.addCase(addCustomer.fulfilled, (state, action) => {
@@ -95,16 +100,18 @@ const customerSlice=createSlice({
         }).addCase(deleteCustomer.fulfilled,(state,action)=>{
             delete state.customers[action.payload]
         })
-        builder.addMatcher((action)=>action.type.endsWith("/pending"), (state) => {
+        builder.addMatcher((action)=>action.type.endsWith("/pending"), (state,action) => {
             state.loading = true;
-            state.error=null;
+            const message=(action as any).meta.arg.message
+            state.error={type:"warning",message};
         }).addMatcher((action)=>action.type.endsWith("/rejected"), (state, action) => {
             state.loading = false;
-            state.error = (action as any).error.message as string;
+            const message=(action as any).payload
+            state.error={type:"error",message};
         })
     }
 })
 
 const {actions, reducer: customerReducer}=customerSlice;
-export const  {setCustomers: setCustomersAction}= actions;
+export const  {setCustomers: setCustomersAction, removeError:removeCustomerErrorAction}= actions;
 export default customerReducer;

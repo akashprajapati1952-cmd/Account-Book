@@ -72,7 +72,7 @@ function UserProfile({ user, logoutAction,updateUser, deleteAccount}: Props) {
                 <p className="text-center text-xl">Are you sure to delete your account?</p>
                 <div className="flex gap-2">
                   <Button type="button" handleClick={()=>{
-                    deleteAccount()
+                    deleteAccount({message:"Deleting Account Please wait..."})
                     setIsDeleting(false)
                   }}>Delete</Button>
                   <Button type="button" handleClick={()=>setIsDeleting(false)}>Back</Button>

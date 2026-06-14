@@ -1,13 +1,15 @@
 import {useEffect} from 'react';
 
 interface AlertProps {
-    alert: string;
+    alert: {type: string | null,message: string | null};
     removeAlert: ()=>void
 }
 
 function Alert({alert,removeAlert}: AlertProps) {
+  let color=""
   useEffect(() => {
-      if(alert) {
+    
+      if(alert.message) {
         const timer = setTimeout(() => {
           removeAlert();
         }, 5* 1000);
@@ -15,15 +17,21 @@ function Alert({alert,removeAlert}: AlertProps) {
       }
   },[alert])
   
-  if(!alert) {
+  
+  if(!alert.message) {
     return null;
   }
+  if(alert.type === "success"){
+      color=" bg-green-700"
+    }else if(alert.type === "warning"){
+      color=" bg-yellow-700"
+    }else{
+      color=" bg-red-700"
+    }
 
-  console.log('alert rendered')
-  
   return (
-    <div className='w-[90%]  z-50 bg-gray-500  flex items-center justify-between border border-gray-500 pr-2 rounded fixed top-20 left-1/2 -translate-x-1/2 -translate-y-1/2  '>
-      <p>{alert}</p>
+    <div className={`w-[90%]  z-50   flex items-center justify-between border border-gray-500 pr-2 rounded fixed top-20 left-1/2 -translate-x-1/2 -translate-y-1/2 ${color} `}>
+      <p className='pl-1'><i>{alert.message}</i></p>
       <button type='button' className=' h-full ' onClick={()=>removeAlert()}>Dismiss</button>
   
     </div>

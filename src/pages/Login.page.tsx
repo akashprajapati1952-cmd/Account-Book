@@ -30,7 +30,7 @@ function Login({user, loadUser}: Redux_props){
 
     function handleSubmit(values: any) {
         try{
-          loadUser(values)
+          loadUser({values,message:"Logging in please wait..."})
     
         }catch(error){
             alert(error)

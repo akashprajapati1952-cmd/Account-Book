@@ -4,25 +4,32 @@ import Login from './pages/Login.page';
 import ProtectedRoutes from './Tools_And_Data/ProtectedRoutes';
 import CustomerList from './pages/CustomerList.page';
 import Header from './components/Header';
-import { useAppDispatch } from './store/store';
+import { useAppDispatch, type State } from './store/store';
 import { useEffect } from 'react';
-import { userRelogin } from './reducers/userSlice';
+import { removeUserErrorAction, userRelogin } from './reducers/userSlice';
 import CustomerTxns from './pages/CustomerTxns.page';
 import UserProfile from './pages/UserProfile.page';
 import ForgotPasswordPage from './pages/ForgotPassword.page';
 import Test from './components/Test';
+import Message from './components/Message';
+import { connect, type ConnectedProps } from 'react-redux';
+import { removeCustomerErrorAction } from './reducers/customerSlice';
+import { customerErrorSelector } from './selectors/customerSelectors';
+import { userErrorSelector } from './selectors/userSelectors';
 
  
 
-function App() {
+function App({userMessage, removeUserError,customerMessage,removeCustomerError}: Redux_props) {
   const dispatch=useAppDispatch();
   useEffect(()=>{
-    dispatch(userRelogin())
+    dispatch(userRelogin({message:""}))
   },[])
 
   return (
     <div className='flex flex-col items-center h-dvh '>
       <Header/>
+      <Message alert={userMessage} removeAlert={removeUserError}/>
+      <Message alert={customerMessage} removeAlert={removeCustomerError}/>
       <div className='flex flex-col h-[calc(100%-60px)] w-full '>
       <Routes>
         <Route path='/test' element={<Test/>}/>
@@ -40,5 +47,20 @@ function App() {
   )
 }
  
+const mapStateToProps=(state: State)=>{
+  
+  return {
+    customerMessage: customerErrorSelector(state),
+    userMessage:userErrorSelector(state)
+  }
+}
+const mapDispatchToProps={
+    removeUserError: removeUserErrorAction,
+    removeCustomerError: removeCustomerErrorAction
+}
 
-export default App
+const connectedComp=connect(mapStateToProps,mapDispatchToProps)
+
+type Redux_props=ConnectedProps<typeof connectedComp>
+
+export default connectedComp(App)

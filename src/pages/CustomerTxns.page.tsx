@@ -19,17 +19,16 @@ function CustomerTxns({customer, addGiven,addTaken,params,deleteCustomer}:Custom
   const customerId=params['customerId']
   const [addingTake, setAddingTake]=useState(false)
   const [addingGive, setAddingGive]=useState(false)
-  console.log(typeof customer.totalTake, typeof customer.totalGive)
  
   function handleTakenSubmit(values: any){
-    addTaken({values,customerId})
+    addTaken({values,customerId, message:'Adding Transaction...'})
     setAddingTake(false)
     console.log(values)
   }
   function handleGivenSubmit(values: any){
-    addGiven({values,customerId})
+    addGiven({values,customerId, message:'Adding Transaction...'})
     setAddingGive(false)
-    console.log(values)
+   
   }
 
   return (
@@ -38,7 +37,7 @@ function CustomerTxns({customer, addGiven,addTaken,params,deleteCustomer}:Custom
           setAddingGive(false)
           setAddingTake(false)
         }} 
-        deleteCustomer={()=>{deleteCustomer(customer.customerId)
+        deleteCustomer={()=>{deleteCustomer({customerId:customer.customerId, message:"Deleting Customer..."})
           navigate(-1)
         }}
         customer={customer}

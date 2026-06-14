@@ -37,7 +37,7 @@ function ForgotPassword({user,getOtp,verifyOtp}: Redux_props){
     })
 
     function handleSubmit(values: any) {
-       verifyOtp({email: values.email,newPassword: values.newPassword,otp:values.otp})
+       verifyOtp({values:{email: values.email,newPassword: values.newPassword,otp:values.otp},message: "Verifying OTP please wait..."})
     }
     return (
         <Formik
@@ -51,7 +51,7 @@ function ForgotPassword({user,getOtp,verifyOtp}: Redux_props){
                 <button type="button" onClick={()=>{
                     
                     setIsOtpSent(true)
-                    getOtp({email: values.email})
+                    getOtp({values:{email: values.email},message:"Sending OTP please wait..."})
                     if(isFirst){
                       setIsFirst(false)
                     }

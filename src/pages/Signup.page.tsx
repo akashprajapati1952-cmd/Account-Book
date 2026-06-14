@@ -55,13 +55,13 @@ function Signup({user, createUser, verifyUser}: Redux_props){
     function handleSubmit(values: any) {
       if(!otpSent){
         try{
-          createUser(values);
+          createUser({values, message:"Sending OTP please wait..."});
           setOtpSent(true)
         }catch(error){  
           alert(error)
         }
       }else{
-    verifyUser(values.otp)
+    verifyUser({values:values.otp,message:"Verifying OTP please wait..."})
         
       }
     }

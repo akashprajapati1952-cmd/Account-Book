@@ -139,7 +139,7 @@ export const userLogin=createAsyncThunk('user/login', async({values}:{values: an
     }
 });
 
-export const userRelogin=createAsyncThunk('user/relogin',async(_,thunkAPI)=>{
+export const userRelogin=createAsyncThunk('user/relogin',async({}: {message: string},thunkAPI)=>{
     try{
         const response= await axios.get(BASE_URL+'/user/profile',{headers:{authorization: `Bearer ${localStorage.getItem("token")}`}})
         const {customers,...user}=response.data.user
@@ -156,7 +156,7 @@ export const userRelogin=createAsyncThunk('user/relogin',async(_,thunkAPI)=>{
 
 export const deleteAccount = createAsyncThunk(
   "user/deleteAccount",
-  async (_, thunkAPI) => {
+  async ({}: {message: string}, thunkAPI) => {
     try {
       const res = await axios.delete(BASE_URL+"/user/delete-account",{headers:{authorization: `Bearer ${localStorage.getItem("token")}`}});
       thunkAPI.dispatch(setCustomersAction({}))
@@ -181,6 +181,11 @@ const logout= (state: UserState)=>{
 }
 
 
+const removeError=(state:UserState)=>{
+    state.error={type: null, message:null}
+}
+
+
 const userSlice = createSlice({
     name: "user",
     initialState: {
@@ -199,7 +204,8 @@ const userSlice = createSlice({
         error: {message: "", type:''}
     } as UserState,
     reducers: {
-        logout
+        logout,
+        removeError
     },
     extraReducers: (builder) => {
         
@@ -259,5 +265,5 @@ const userSlice = createSlice({
     }
 })
 
-export  const {logout: logoutAction}=userSlice.actions
+export  const {logout: logoutAction,removeError: removeUserErrorAction}=userSlice.actions
 export default userSlice.reducer;

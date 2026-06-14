@@ -19,7 +19,7 @@ function CustomerList({customers, addCustomer,user}: Redux_props) {
     },[customers,user])
 
     function handleSubmit(values: any){
-       addCustomer(values);
+       addCustomer({values,message: "Adding Customer"});
        setIsAdding(false)
        
     }
