@@ -1,73 +1,150 @@
-# React + TypeScript + Vite
+# Account Book
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A full-stack personal account management application for managing
+customers, money transactions, balances, and dashboard reports.
 
-Currently, two official plugins are available:
+## Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+-   User authentication with JWT
+-   Customer add, delete and search
+-   Money to take and money to give management
+-   Transaction edit and delete
+-   Settlement tracking
+-   Dashboard summary
+-   Recent transactions
+-   Redux Toolkit state management
+-   Protected backend APIs
 
-## React Compiler
+## Tech Stack
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+### Frontend
 
-## Expanding the ESLint configuration
+-   React + TypeScript
+-   Vite
+-   Redux Toolkit
+-   React Redux connect()
+-   React Router
+-   Tailwind CSS
+-   Formik + Yup
+-   Axios
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+### Backend
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+-   Node.js
+-   Express.js
+-   MongoDB
+-   Mongoose
+-   JWT
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+## Frontend Structure
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+    src/
+     ├── components
+     ├── pages
+     ├── reducers
+     ├── selectors
+     ├── store
+     ├── models
+     └── utils
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## Backend Structure
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+    backend/
+     ├── controllers
+     ├── routes
+     ├── middleware
+     ├── models
+     └── utils
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+## API Base URL
+
+    https://account-book-backend-rma8.onrender.com/api
+
+## Main APIs
+
+### User APIs
+
+    POST /user/register
+    POST /user/login
+    POST /user/forgot-password
+    PUT /user/change-email
+
+### Customer APIs
+
+    GET /customer/all
+    POST /customer/save
+    GET /customer/:customerId
+    DELETE /customer/:customerId
+
+    POST /customer/:customerId/add-take
+    POST /customer/:customerId/add-give
+
+    PUT /customer/:customerId/transaction/:txId
+    DELETE /customer/:customerId/transaction/:txId
+
+    POST /customer/:customerId/settle
+
+### Dashboard APIs
+
+    GET /dashboard/summary
+    GET /dashboard/recent-transactions
+
+## Redux Flow
+
+-   Redux Toolkit is used for global state.
+-   Async API calls are handled using createAsyncThunk.
+-   Components use React Redux connect().
+
+Flow:
+
+User Action → Dispatch → Async Thunk → API → Reducer Update → Component
+Render
+
+## Performance
+
+-   Data is reused from Redux store.
+-   API calls are avoided when required data already exists.
+-   Search is handled separately using search results state.
+
+## Transaction System
+
+Each customer maintains:
+
+-   moneyToTake
+-   moneyToGive
+-   settlements
+
+Dashboard collects transactions from all customers and sorts recent
+transactions by date/timestamp.
+
+## Installation
+
+Frontend:
+
+    npm install
+    npm run dev
+
+Backend:
+
+    npm install
+    npm start
+
+## Environment Variables
+
+Backend:
+
+    MONGO_URI=
+    JWT_SECRET=
+    PORT=
+
+## Future Improvements
+
+-   Pagination
+-   Reports export
+-   PDF generation
+-   Charts and analytics
+-   Voice assistant integration
+
+## Author
+
+Account Book Project
