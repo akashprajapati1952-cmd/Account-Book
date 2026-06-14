@@ -8,16 +8,18 @@ type CustomerState={
  customers: Record<string, CustomersWithId>;
  searchResults: Record<string, CustomersWithId>;
  loading:boolean;
- error:{message:string|null; type:string|null}
+ error:{message: string | null; type: string | null};
+ seaching: boolean
 }
-const initialState={
+const initialState: CustomerState={
  customers:{},
  searchResults:{},
  loading:false,
  error:{
   message:null,
   type:null
- }
+ },
+ seaching: false
 }
 
 export const deleteCustomer=createAsyncThunk('customer/delete',async({customerId}:{customerId: string; message: string},thunkAPI)=>{
@@ -45,12 +47,7 @@ export const addCustomer=createAsyncThunk('customer/add', async({values}:{values
     }
 });
 
-export const searchCustomer = createAsyncThunk(
-  "customer/search",
-  async(
-    {query}:{query:string},
-    thunkAPI
-  )=>{
+export const searchCustomer = createAsyncThunk("customer/search",async({query}:{query:string},thunkAPI)=>{
 
     try{
 
@@ -120,6 +117,9 @@ const setCustomers=(state: CustomerState, action: PayloadAction<Record<string, C
     ])
     )
 }
+const openCustomerLoading=(state: CustomerState, action: PayloadAction<boolean>)=>{
+  state.seaching=action.payload
+}
 
 const removeError=(state: CustomerState)=>{
     state.error={message: null,type: null}
@@ -129,7 +129,8 @@ const customerSlice=createSlice({
     initialState,
     reducers: {
       setCustomers,
-      removeError
+      removeError,
+      openCustomerLoading
     },
     extraReducers: (builder) => {
         builder.addCase(addCustomer.fulfilled, (state, action) => {
@@ -156,11 +157,9 @@ const customerSlice=createSlice({
             delete state.customers[action.payload.customerId]
             state.error={type:"success",message: action.payload.data.message}
         }).addCase(searchCustomer.fulfilled,(state,action)=>{
-
-          state.loading=false;
-
-          state.searchResults =action.payload.customers;
-
+          state.loading=false
+          state.searchResults =action.payload.customers
+          state.seaching=false
        })
         builder.addMatcher((action)=>action.type.startsWith("customer/") && action.type.endsWith("/pending"), (state,action) => {
             state.loading = true;
@@ -175,5 +174,5 @@ const customerSlice=createSlice({
 })
 
 const {actions, reducer: customerReducer}=customerSlice;
-export const  {setCustomers: setCustomersAction, removeError:removeCustomerErrorAction}= actions;
+export const  {setCustomers: setCustomersAction, removeError:removeCustomerErrorAction, openCustomerLoading: onCustomerLoading}= actions;
 export default customerReducer;
