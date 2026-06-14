@@ -5,6 +5,7 @@ import { useState } from "react"
 import Countdown from "./Timer"
 import { getEmailChangeOtp, verifyEmailChangeOtp } from "../reducers/userSlice"
 import { connect, type ConnectedProps } from "react-redux"
+import { ImCross } from "react-icons/im";
 
 interface Props{
     hide: ()=>void
@@ -26,17 +27,18 @@ const ChangeEmail=({getOtp, verifyOtp,hide}:Redux_props & Props)=>{
             initialValues={{newEmail:'',newEmailOtp:'',oldEmailOtp:''}}
             onSubmit={(values)=>{
                 console.log(values)
-                verifyOtp({newEmailOtp: values.newEmailOtp,oldEmailOtp: values.oldEmailOtp})
+                verifyOtp({values:{newEmailOtp: values.newEmailOtp,oldEmailOtp: values.oldEmailOtp}, message:'Verifying OTP please wait...'})
                 hide()
             }}
             validationSchema={validationSchema}
         >
             {({values})=><Form className="flex flex-col gap-2 rounded-lg w-60 bg-amber-300 px-5 py-3 absolute top-[calc(50%-130px)] left-[calc(50%-120px)]">
+              <ImCross className="absolute top-2 right-2" onClick={hide}/>
               <h1 className="text-center"><b>Change Email</b></h1>
               <FormikInput name="newEmail" label="New Email" placeholder="Enter new email" type="email"/>
               <button type="button" onClick={()=>{        
                 setIsOtpSent(true)
-                getOtp({newEmail: values.newEmail})
+                getOtp({newEmail: values.newEmail, message:'Sending OTP'})
                 if(isFirst){
                   setIsFirst(false)
                 }

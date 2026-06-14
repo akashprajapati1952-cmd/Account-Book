@@ -1,10 +1,9 @@
-
-import ChangeEmail from "./ChangeEmail";
+import Alert from "./Message";
 
 
 function Test() {
     return (
-        <ChangeEmail hide={()=>console.log("heee")}/>
+        <Alert alert="User login Success" removeAlert={()=>console.log("Alert Removed")}/>
     )
 }
 

@@ -8,7 +8,7 @@ const Header=({user}: Redux_props)=>{
     return(
         <header className="bg-gray-800 text-white p-2 h-15 flex justify-between items-center gap-2 w-full">
             <h1><b>Account Book</b></h1>
-            <img onClick={()=>navigate('/userProfile')} className=" h-full rounded-full object-cover" src={user.img ? user.img : '/face.png'} alt="logo"/>
+            <img onClick={()=>navigate('/userProfile')} className="h-10 w-10 rounded-full object-cover" src={user.img ? user.img : '/face.png'} alt="logo"/>
         </header>
     )
 }

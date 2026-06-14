@@ -5,15 +5,31 @@ import { BASE_URL } from "../Tools_And_Data/baseUrls";
 import { setCustomersAction } from "./customerSlice";
 
 
+
 interface UserState {
     user: User;
     loading: boolean;
-    error: string | null;
+    error: {message: string | null; type: string | null}
 }
 
-export const getEmailChangeOtp=createAsyncThunk('user/change-email/send-otp', async(values: any,thunkAPI) => {
+export const uploadImg=createAsyncThunk('user/upload-image', async({file}: {file: File; message: string},thunkAPI) => {
     try{
-      const response = await axios.post(BASE_URL + '/user/change-email/send-otp',values,{headers:{authorization: `Bearer ${localStorage.getItem("token")}`}});
+      const formData= new FormData()
+      formData.append("image",file)
+      const response = await axios.put(BASE_URL + '/user/upload-image',formData,{headers:{authorization: `Bearer ${localStorage.getItem("token")}`,"Content-Type":"multipart/form-data"}});
+      return response.data ;
+    }catch(err){
+        if(axios.isAxiosError(err)){
+          return thunkAPI.rejectWithValue(err.response?.data.message || 'Failed to send otp');
+        }
+        return thunkAPI.rejectWithValue('Something went wrong')
+        
+    }
+});
+
+export const getEmailChangeOtp=createAsyncThunk('user/change-email/send-otp', async({newEmail}:{newEmail: string; message: string},thunkAPI) => {
+    try{
+      const response = await axios.post(BASE_URL + '/user/change-email/send-otp',{newEmail},{headers:{authorization: `Bearer ${localStorage.getItem("token")}`}});
       return response.data.message ;
     }catch(err){
         if(axios.isAxiosError(err)){
@@ -24,7 +40,7 @@ export const getEmailChangeOtp=createAsyncThunk('user/change-email/send-otp', as
     }
 });
 
-export const verifyEmailChangeOtp=createAsyncThunk('user/change-email/verify', async(values: any,thunkAPI) => {
+export const verifyEmailChangeOtp=createAsyncThunk('user/change-email/verify', async({values}:{values: any; message: string},thunkAPI) => {
     try{
       const response = await axios.post(BASE_URL + '/user/change-email/verify',values,{headers:{authorization: `Bearer ${localStorage.getItem("token")}`}});
       return response.data ;
@@ -37,7 +53,7 @@ export const verifyEmailChangeOtp=createAsyncThunk('user/change-email/verify', a
     }
 }); 
 
-export const getForgetPasswordOtp=createAsyncThunk('user/forgot-password/send-otp', async(values: any,thunkAPI) => {
+export const getForgetPasswordOtp=createAsyncThunk('user/forgot-password/send-otp', async({values}:{values: any;message: string},thunkAPI) => {
     try{
       const response = await axios.post(BASE_URL + '/forgot-password/send-otp',values,{headers:{authorization: `Bearer ${localStorage.getItem("token")}`}});
       return response.data.message ;
@@ -50,7 +66,7 @@ export const getForgetPasswordOtp=createAsyncThunk('user/forgot-password/send-ot
     }
 });
 
-export const verifyForgetPasswordOtp=createAsyncThunk('user/forgot-password/verify', async(values: any,thunkAPI) => {
+export const verifyForgetPasswordOtp=createAsyncThunk('user/forgot-password/verify', async({values}:{values: any;message: string},thunkAPI) => {
     try{
       const response = await axios.post(BASE_URL + '/forgot-password/verify',values,{headers:{authorization: `Bearer ${localStorage.getItem("token")}`}});
       return response.data.message ;
@@ -63,7 +79,7 @@ export const verifyForgetPasswordOtp=createAsyncThunk('user/forgot-password/veri
     }
 }); 
 
-export const updateUser=createAsyncThunk('user/update-profile', async(values: any,thunkAPI) => {
+export const updateUser=createAsyncThunk('user/update-profile', async({values}:{values: any;message: string},thunkAPI) => {
     try{
         console.log('thunk rendered')
       const response = await axios.put(BASE_URL + '/user/update-profile',values,{headers:{authorization: `Bearer ${localStorage.getItem("token")}`}});
@@ -77,7 +93,7 @@ export const updateUser=createAsyncThunk('user/update-profile', async(values: an
     }
 });
 
-export const userSignup=createAsyncThunk('user/signup/send-otp', async(values: any,thunkAPI) => {
+export const userSignup=createAsyncThunk('user/signup/send-otp', async({values}:{values: any;message: string},thunkAPI) => {
     try{
       const response = await axios.post(BASE_URL + '/signup/send-otp',values);
       return response.data ;
@@ -90,7 +106,7 @@ export const userSignup=createAsyncThunk('user/signup/send-otp', async(values: a
     }
 });
 
-export const userVerify=createAsyncThunk('user/signup/verify-otp', async(values: any,thunkAPI) => {
+export const userVerify=createAsyncThunk('user/signup/verify-otp', async({values}:{values: any;message: string},thunkAPI) => {
     try{
       const response = await axios.post(BASE_URL + '/signup/verify',{otp: values, sessionToken: sessionStorage.getItem("sessionToken")});
       localStorage.setItem('token',(response.data.token))
@@ -106,7 +122,7 @@ export const userVerify=createAsyncThunk('user/signup/verify-otp', async(values:
     }
 });
 
-export const userLogin=createAsyncThunk('user/login', async(values: any,thunkAPI) => {
+export const userLogin=createAsyncThunk('user/login', async({values}:{values: any;message: string},thunkAPI) => {
     try{
       const response = await axios.post(BASE_URL + '/login',values);
       localStorage.setItem('token',(response.data.token));
@@ -180,7 +196,7 @@ const userSlice = createSlice({
           zipCode: '',
         } ,
         loading: false,
-        error: null
+        error: {message: "", type:''}
     } as UserState,
     reducers: {
         logout
@@ -208,23 +224,36 @@ const userSlice = createSlice({
             setUser(state,initialUser)
         }).addCase(getForgetPasswordOtp.fulfilled,(state,action)=>{
             state.loading=false;
-            state.error=action.payload
+            state.error.message=action.payload
+            state.error.type="success"
         }).addCase(verifyForgetPasswordOtp.fulfilled,(state,action)=>{
             state.loading=false;
-            state.error=action.payload
+            state.error.message=action.payload
+            state.error.type="success"
         }).addCase(getEmailChangeOtp.fulfilled,(state,action)=>{
             state.loading=false;
-            state.error=action.payload
+            state.error.type="success"
+            state.error.message=action.payload
         }).addCase(verifyEmailChangeOtp.fulfilled,(state,action)=>{
             state.loading=false;
-            state.error=action.payload.message;
+            state.error.type="success"
+            state.error.message=action.payload.message;
             setUser(state,action.payload.user)
-        }).addMatcher((action)=>action.type.endsWith('/pending'),(state) => {
+        }).addCase(uploadImg.fulfilled,(state,action)=>{
+            state.loading=false;
+            state.error.type="success"
+            state.error.message=action.payload.message;
+            setUser(state,action.payload.user)
+        }).addMatcher((action)=>action.type.endsWith('/pending'),(state, action) => {
             state.loading = true;
-            state.error=null;
+            const message=(action as any).meta.arg.message
+            state.error.message=message;
+            state.error.type="warning"
         }).addMatcher((action)=>action.type.endsWith('/rejected'),(state, action) => {
             state.loading = false;
-            state.error = (action as any).error.message  || 'Some error occured';
+            const message=(action as any).paylaod
+            state.error.message=message || "Some error occured";
+            state.error.type="error"
         })
         ;
     }

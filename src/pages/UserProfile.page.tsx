@@ -11,6 +11,8 @@ import { ImMenu } from "react-icons/im";
 import { deleteAccount, logoutAction, updateUser} from "../reducers/userSlice";
 import { setCustomersAction } from "../reducers/customerSlice";
 import ChangeEmail from "../components/ChangeEmail";
+import { FaEdit } from "react-icons/fa";
+import ChangeImg from "../components/ChangeImg";
 
 
 interface UserProfileProps {
@@ -23,6 +25,7 @@ function UserProfile({ user, logoutAction,updateUser, deleteAccount}: Props) {
     const [isMenuOpen,setIsMenuOpen]=useState(false)
     const [isDeleting, setIsDeleting]=useState(false)
     const [isEditionEmail, setIsEditingEmail]=useState(false)
+    const [isEditionPic, setIsEditingPic]=useState(false)
     const req='This field is required'
     const validationSchema = Yup.object({
         mobile: Yup.string().matches(/^[0-9]{10}$/, 'Invalid mobile number').required(req),
@@ -34,7 +37,7 @@ function UserProfile({ user, logoutAction,updateUser, deleteAccount}: Props) {
         zipCode: Yup.string().matches(/^[0-9]{6}$/, 'Invalid zip code').required(req)
     })
   return (
-    <div className=" max-w-2xl mx-auto p-6 bg-white rounded-lg shadow ">
+    <div  className=" max-w-2xl mx-auto p-6 bg-white rounded-lg shadow ">
       <div className="absolute top-17 right-2 flex flex-col gap-1">
         <ImMenu onClick={()=>setIsMenuOpen(!isMenuOpen)} className="self-end"/>
         {isMenuOpen && <div className="flex flex-col items-start border px-2 rounded-lg bg-gray-500" >
@@ -51,13 +54,19 @@ function UserProfile({ user, logoutAction,updateUser, deleteAccount}: Props) {
       </div>
       
       <div className="flex flex-col items-center mb-6">
-        <img
-          src={user.img ? user.img : "/face.png"}
-          alt={user.name}
-          className="w-28 h-28 rounded-full object-cover border"
-        />
+        <div className="relative">
+          <img
+            src={user.img ? user.img : "/face.png"}
+            alt={user.name}
+            className="w-28 h-28 rounded-full object-cover border"
+          />
+          <FaEdit onClick={()=>setIsEditingPic(true)} className="absolute bottom-1 right-2"/>
+        </div>
         <h2 className="text-2xl font-bold mt-3">{user.name}</h2>
-        <p className="text-gray-500">{user.email}</p>
+        <p className="text-gray-500 relative " >
+          <span>{user.email}</span>
+          <FaEdit onClick={()=>setIsEditingEmail(true)} className="absolute bottom-1 -right-5 text-black"/>
+        </p>
       </div>
       {isDeleting && <div className="absolute top-1/2 left-[calc(50%-140px)] w-70 bg-red-700 p-2 rounded-lg space-y-2">
                 <p className="text-center text-xl">Are you sure to delete your account?</p>
@@ -72,7 +81,7 @@ function UserProfile({ user, logoutAction,updateUser, deleteAccount}: Props) {
       <Formik
         initialValues={{name: user.name, mobile:user.mobile,gender:user.gender,businessName:user.businessName,businessType:user.businessType,address:user.address,zipCode:user.zipCode}}
         onSubmit={(values)=>{
-          updateUser(values)
+          updateUser({values,message: "Updating Details please wait..."})
           setIsEditing(false)
         }}
         validationSchema={validationSchema}
@@ -92,9 +101,12 @@ function UserProfile({ user, logoutAction,updateUser, deleteAccount}: Props) {
             setIsEditing(false)
             resetForm()
           }}>Discard</Button>}
+          
         </Form>)}
+        
       </Formik>
-      {isEditionEmail && <ChangeEmail/>}
+      {isEditionEmail && <ChangeEmail hide={()=>setIsEditingEmail(false)}/>}
+      {isEditionPic && <ChangeImg hide={()=>setIsEditingPic(false)} />}
     </div>
   );
 }
