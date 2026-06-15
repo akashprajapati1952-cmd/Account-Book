@@ -17,36 +17,69 @@ import { removeCustomerErrorAction } from './reducers/customerSlice';
 import { customerErrorSelector } from './selectors/customerSelectors';
 import { userErrorSelector } from './selectors/userSelectors';
 import Dashboard from "./pages/Dashboard.page";
+import AboutPage from './pages/About.page';
 
  
 
-function App({userMessage, removeUserError,customerMessage,removeCustomerError}: Redux_props) {
-  const dispatch=useAppDispatch();
-  useEffect(()=>{
-    dispatch(userRelogin({message:""}))
-  },[])
+function App({
+  userMessage,
+  removeUserError,
+  customerMessage,
+  removeCustomerError,
+}: Redux_props) {
+  const dispatch = useAppDispatch();
+
+  useEffect(() => {
+    dispatch(userRelogin({ message: "" }));
+  }, []);
 
   return (
-    <div className='flex flex-col items-center h-dvh '>
-      <Header/>
-      {userMessage.message ? <Message alert={userMessage} removeAlert={removeUserError}/>:
-      <Message alert={customerMessage} removeAlert={removeCustomerError}/>}
-      <div className='flex flex-col h-[calc(100%-60px)] w-full '>
-      <Routes>
-        <Route path='/test' element={<Test/>}/>
-        <Route path="/login" element={<Login />} />
-        <Route path="/signup" element={<Signup />} />
-        <Route path="/forgotPassword" element={<ForgotPasswordPage />} />
-        <Route element={<ProtectedRoutes/>}>
-          <Route path='/' element={<CustomerList/>}/>
-          <Route path="/dashboard" element={<Dashboard/>}/>
-          <Route path="/customer/:customerId" element={<CustomerTxns/>}/>
-          <Route path='/userProfile' element={<UserProfile/>}/>
-        </Route>
-      </Routes>
-      </div>
+    <div className="min-h-screen bg-slate-50">
+      <Header />
+
+      {(userMessage.message || customerMessage.message) && (
+        <div className="fixed top-20 left-1/2 z-100 w-[95%] max-w-md -translate-x-1/2">
+          {userMessage.message ? (
+            <Message
+              alert={userMessage}
+              removeAlert={removeUserError}
+            />
+          ) : (
+            <Message
+              alert={customerMessage}
+              removeAlert={removeCustomerError}
+            />
+          )}
+        </div>
+      )}
+
+      <main className="mx-auto w-full max-w-7xl flex-1">
+        <Routes>
+          <Route path="/test" element={<Test />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/signup" element={<Signup />} />
+          <Route path="/about" element={<AboutPage />} />
+          <Route
+            path="/forgotPassword"
+            element={<ForgotPasswordPage />}
+          />
+
+          <Route element={<ProtectedRoutes />}>
+            <Route path="/" element={<CustomerList />} />
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route
+              path="/customer/:customerId"
+              element={<CustomerTxns />}
+            />
+            <Route
+              path="/userProfile"
+              element={<UserProfile />}
+            />
+          </Route>
+        </Routes>
+      </main>
     </div>
-  )
+  );
 }
  
 const mapStateToProps=(state: State)=>{

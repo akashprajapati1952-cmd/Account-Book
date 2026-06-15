@@ -66,24 +66,180 @@ function Signup({user, createUser, verifyUser}: Redux_props){
       }
     }
     
-    return (
-        <Formik
-        initialValues={{email: '',otp: '', password: '',mobile: '',confirmPassword: '',gender: '', name: '', businessName: '', businessType: '',address: '', zipCode: ''}}
-        validationSchema={validationSchema}
-        onSubmit={handleSubmit}
+   return (
+  <div
+    className="
+      flex
+      min-h-[calc(100vh-64px)]
+      items-center
+      justify-center
+
+      px-4
+      py-8
+
+      bg-slate-50
+    "
+  >
+    <Formik
+      initialValues={{
+        email: "",
+        otp: "",
+        password: "",
+        mobile: "",
+        confirmPassword: "",
+        gender: "",
+        name: "",
+        businessName: "",
+        businessType: "",
+        address: "",
+        zipCode: "",
+      }}
+      validationSchema={validationSchema}
+      onSubmit={handleSubmit}
     >
-        <Form className='flex mx-auto flex-col gap-4 w-80 rounded-xl p-6  bg-gray-100 items-center'>
-            <h1 className='self-center text-xl'><b>Signup with Account Book</b></h1>
-            {otpSent? <FormikInput key="otp" type="text" name="otp" placeholder="Enter OTP" label="OTP"/>:
-            fields.map(field=><FormikInput key={field.name} type={field.type} name={field.name} placeholder={field.placeholder} label={field.label}/>)
-            }
-            <button type="submit" className=' text-white px-4 py-1 rounded bg-red-900 w-full'>{otpSent ? 'Verify OTP' : 'Sign up'}</button>
-            <Link to="/login" className='text-sm text-blue-500'>Already have an account? Login</Link>
-            
-        </Form>
-  
+      <Form
+        className="
+          w-full
+          max-w-2xl
+
+          rounded-3xl
+
+          border
+          border-slate-200
+
+          bg-white
+
+          p-8
+
+          shadow-xl
+        "
+      >
+        <div className="mb-8 text-center">
+          <div
+            className="
+              mx-auto
+              mb-4
+
+              flex
+              h-16
+              w-16
+              items-center
+              justify-center
+
+              rounded-2xl
+
+              bg-indigo-100
+
+              text-2xl
+              font-bold
+              text-indigo-700
+            "
+          >
+            AB
+          </div>
+
+          <h1 className="text-3xl font-bold text-slate-800">
+            Create Account
+          </h1>
+
+          <p className="mt-2 text-sm text-slate-500">
+            Start managing your business transactions
+          </p>
+        </div>
+
+        {otpSent ? (
+          <div className="space-y-4">
+            <FormikInput
+              type="text"
+              name="otp"
+              placeholder="Enter OTP"
+              label="OTP"
+            />
+
+            <button
+              type="submit"
+              className="
+                w-full
+
+                rounded-xl
+
+                bg-indigo-600
+
+                py-3
+
+                font-semibold
+                text-white
+
+                transition-all
+
+                hover:bg-indigo-700
+
+                active:scale-[0.98]
+              "
+            >
+              Verify OTP
+            </button>
+          </div>
+        ) : (
+          <>
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+              {fields.map((field) => (
+                <FormikInput
+                  key={field.name}
+                  type={field.type}
+                  name={field.name}
+                  placeholder={field.placeholder}
+                  label={field.label}
+                />
+              ))}
+            </div>
+
+            <button
+              type="submit"
+              className="
+                mt-6
+
+                w-full
+
+                rounded-xl
+
+                bg-indigo-600
+
+                py-3
+
+                font-semibold
+                text-white
+
+                transition-all
+
+                hover:bg-indigo-700
+
+                active:scale-[0.98]
+              "
+            >
+              Sign Up
+            </button>
+          </>
+        )}
+
+        <div className="mt-5 text-center">
+          <Link
+            to="/login"
+            className="
+              text-sm
+              text-slate-600
+            "
+          >
+            Already have an account?{" "}
+            <span className="font-semibold text-indigo-600">
+              Login
+            </span>
+          </Link>
+        </div>
+      </Form>
     </Formik>
-    )
+  </div>
+);
 }
 
 const mapStateToProps=(state: State)=>({

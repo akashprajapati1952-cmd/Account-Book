@@ -145,14 +145,14 @@ const customerSlice=createSlice({
           const txId = data.txId;
           state.customers[customerId].moneyToGive![txId as string] = data.transaction;
           state.customers[customerId].totalGive = data.totalGive;
-          state.error={type:"success", message:data.message}
+          state.error={type:"success", message:"Riceived entry added successfully"}
         }).addCase(addTaken.fulfilled,(state, action)=>{
           state.loading=false
           const { customerId, data } = action.payload;
           const txId = data.txId;
           state.customers[customerId].moneyToTake![txId as string] = data.transaction;
           state.customers[customerId].totalTake = data.totalTake;
-          state.error=data.message
+          state.error={type:"success", message:"Given entry added successfully"}
         }).addCase(deleteCustomer.fulfilled,(state,action)=>{
             delete state.customers[action.payload.customerId]
             state.error={type:"success",message: action.payload.data.message}

@@ -38,51 +38,135 @@ function UserProfile({ user, logoutAction,updateUser, deleteAccount}: Props) {
         zipCode: Yup.string().matches(/^[0-9]{6}$/, 'Invalid zip code').required(req)
     })
   return (
-    <div  className=" max-w-2xl mx-auto p-6 bg-white rounded-lg shadow ">
-      <div className="absolute top-17 right-2 flex flex-col gap-1">
-        <ImMenu onClick={()=>setIsMenuOpen(!isMenuOpen)} className="self-end"/>
-        {isMenuOpen && <div className="flex flex-col items-start border px-2 rounded-lg bg-gray-500" >
-          <Link to="/">Customers</Link>
-          <Link to="/dashboard">Dashboard</Link>
-          <button type="button" onClick={()=>{
-            logoutAction()
-            setIsMenuOpen(false)
-            
-          }}>Logout</button>
-          <button type="button" className="text-red-700" onClick={()=>{
-            setIsDeleting(true)
-            setIsMenuOpen(false)
-            }}>Delete Account</button>
-            
-        </div>}
-      </div>
+    <div className="relative mx-auto w-full max-w-4xl p-4 md:p-6">
+      <div className="absolute right-4 top-4 z-20">
+  <button
+    type="button"
+    aria-label="Open menu"
+    onClick={() => setIsMenuOpen(!isMenuOpen)}
+    className="rounded-xl p-2 hover:bg-slate-100"
+  >
+    <ImMenu size={18} />
+  </button>
+
+  {isMenuOpen && (
+    <div className="absolute right-0 mt-2 w-48 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-xl">
+        <Link
+          to="/"
+          className="block px-4 py-3 hover:bg-slate-50"
+        >
+          Customers
+        </Link>
+
+        <Link
+          to="/dashboard"
+          className="block px-4 py-3 hover:bg-slate-50"
+        >
+          Dashboard
+        </Link>
+
+        <button
+          type="button"
+          onClick={() => {
+            logoutAction();
+            setIsMenuOpen(false);
+          }}
+          className="w-full px-4 py-3 text-left hover:bg-slate-50"
+        >
+          Logout
+        </button>
+
+        <button
+          type="button"
+          className="w-full px-4 py-3 text-left text-red-600 hover:bg-red-50"
+          onClick={() => {
+            setIsDeleting(true);
+            setIsMenuOpen(false);
+          }}
+          >
+            Delete Account
+          </button>
+        </div>)}
+      </div> 
       
-      <div className="flex flex-col items-center mb-6">
-        <div className="relative">
-          <img
-            src={user.img ? user.img : "/face.png"}
-            alt={user.name}
-            className="w-28 h-28 rounded-full object-cover border"
-          />
-          <FaEdit onClick={()=>setIsEditingPic(true)} className="absolute bottom-1 right-2"/>
+      <div className="mb-6 rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+        <div className="flex flex-col items-center">
+          <div className="relative">
+            <img
+              src={user.img ? user.img : "/face.png"}
+              alt={user.name}
+              className="h-32 w-32 rounded-full border-4 border-indigo-100 object-cover"
+            />
+
+            <button
+              type="button"
+              aria-label="Change profile picture"
+              onClick={() => setIsEditingPic(true)}
+              className="absolute bottom-1 right-1 rounded-full bg-indigo-600 p-2 text-white shadow-md"
+            >
+              <FaEdit />
+            </button>
+          </div>
+
+          <h2 className="mt-4 text-3xl font-bold text-slate-800">
+            {user.name}
+          </h2>
+
+          <div className="mt-2 flex items-center gap-2">
+            <span className="text-slate-500">
+              {user.email}
+            </span>
+
+            <button
+              type="button"
+              aria-label="Change email"
+              onClick={() => setIsEditingEmail(true)}
+              className="text-indigo-600"
+            >
+              <FaEdit />
+            </button>
+          </div>
         </div>
-        <h2 className="text-2xl font-bold mt-3">{user.name}</h2>
-        <p className="text-gray-500 relative " >
-          <span>{user.email}</span>
-          <FaEdit onClick={()=>setIsEditingEmail(true)} className="absolute bottom-1 -right-5 text-black"/>
-        </p>
       </div>
-      {isDeleting && <div className="absolute top-1/2 left-[calc(50%-140px)] w-70 bg-red-700 p-2 rounded-lg space-y-2">
-                <p className="text-center text-xl">Are you sure to delete your account?</p>
-                <div className="flex gap-2">
-                  <Button type="button" handleClick={()=>{
-                    deleteAccount({message:"Deleting Account Please wait..."})
-                    setIsDeleting(false)
-                  }}>Delete</Button>
-                  <Button type="button" handleClick={()=>setIsDeleting(false)}>Back</Button>
-                  
-                </div>
-              </div>}
+      {isDeleting && (
+         <>
+            <div
+              className="fixed inset-0 z-40 bg-black/40 backdrop-blur-sm"
+              onClick={() => setIsDeleting(false)}
+            />
+
+            <div className="fixed left-1/2 top-1/2 z-50 w-[90%] max-w-md -translate-x-1/2 -translate-y-1/2 rounded-3xl bg-white p-6 shadow-2xl">
+              <h3 className="text-xl font-bold text-slate-800">
+                  Delete Account
+              </h3>
+
+              <p className="mt-3 text-slate-600">
+                Are you sure you want to delete your account?
+              </p>
+
+              <div className="mt-6 flex gap-3">
+                <Button
+                  type="button"
+                  handleClick={() => {
+                    deleteAccount({
+                      message: "Deleting Account Please wait...",
+                    });
+                    setIsDeleting(false);
+                  }}
+                >
+                  Delete
+                </Button>
+
+                <Button
+                  type="button"
+                  handleClick={() => setIsDeleting(false)}
+                >
+                  Cancel
+                </Button>
+              </div>
+            </div>
+         </>
+        )}
       <Formik
         initialValues={{name: user.name, mobile:user.mobile,gender:user.gender,businessName:user.businessName,businessType:user.businessType,address:user.address,zipCode:user.zipCode}}
         onSubmit={(values)=>{
@@ -92,7 +176,7 @@ function UserProfile({ user, logoutAction,updateUser, deleteAccount}: Props) {
         validationSchema={validationSchema}
       >
         {({dirty, resetForm})=>(
-        <Form className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <Form className="grid grid-cols-1 gap-4 rounded-3xl bg-white p-5 shadow-sm md:grid-cols-2">
           <ProfileField label='Name' name="name" readOnly={!isEditing}/>
           <ProfileField label="Mobile" name="mobile" readOnly={!isEditing} />
           <ProfileField label="Gender" name="gender" type="select" readOnly={!isEditing} />
@@ -100,18 +184,85 @@ function UserProfile({ user, logoutAction,updateUser, deleteAccount}: Props) {
           <ProfileField label="Business Type" type="select" name="businessType" readOnly={!isEditing} />
           <ProfileField label="Address" name="address" readOnly={!isEditing} />
           <ProfileField label="Zip Code" name="zipCode" readOnly={!isEditing} />
-          {!isEditing && <Button type='button' handleClick={()=>setIsEditing(true)}>Edit</Button>}
-          {isEditing && <button type="submit" disabled={!dirty} className={`text-white px-4 py-1 rounded ${ dirty ? "bg-red-900" : "bg-red-300"} w-full`}>Change Details</button>}
-          {isEditing && <Button type='button' handleClick={()=>{
-            setIsEditing(false)
-            resetForm()
-          }}>Discard</Button>}
+          <div className="md:col-span-2 flex gap-3">
+            {!isEditing ? (
+              <Button
+                type="button"
+                handleClick={() => setIsEditing(true)}
+              >
+                Edit Profile
+              </Button>
+            ) : (
+              <>
+                <button
+                  type="submit"
+                  disabled={!dirty}
+                  className={`
+                    w-full rounded-xl py-3 font-semibold text-white
+                    ${
+                      dirty
+                      ? "bg-indigo-600"
+                      : "bg-indigo-300"
+                    }
+                  `}
+                >
+                  Save Changes
+                </button>
+
+                <Button
+                  type="button"
+                  handleClick={() => {
+                  setIsEditing(false);
+                  resetForm();
+                  }}
+                >
+                  Cancel
+                </Button>
+              </>
+            )}
+          </div>
           
         </Form>)}
         
       </Formik>
-      {isEditionEmail && <ChangeEmail hide={()=>setIsEditingEmail(false)}/>}
-      {isEditionPic && <ChangeImg hide={()=>setIsEditingPic(false)} />}
+      {isEditionEmail && (
+        <>
+          <div
+            className="
+              fixed
+              inset-0
+              z-40
+
+            bg-black/40
+              backdrop-blur-sm
+            "
+            onClick={() => setIsEditingEmail(false)}
+          />
+
+          <ChangeEmail
+            hide={() => setIsEditingEmail(false)}
+          />
+        </>
+      )}
+      {isEditionPic && (
+  <>
+    <div
+      className="
+        fixed
+        inset-0
+        z-40
+
+        bg-black/40
+        backdrop-blur-sm
+      "
+      onClick={() => setIsEditingPic(false)}
+    />
+
+    <ChangeImg
+      hide={() => setIsEditingPic(false)}
+    />
+  </>
+)}
     </div>
   );
 }
@@ -120,17 +271,22 @@ function ProfileField({
   label,
   name,
   readOnly,
-  type
+  type,
 }: {
   label: string;
   name: string;
   readOnly: boolean;
-  type?: string
+  type?: string;
 }) {
   return (
-    <div className="border rounded p-3">
-      <label htmlFor="value" className="sr-only">{label}</label>
-      <FormikInput name={name} label={label} type={type ? type : "text"} className="font-medium border-none" readonly={readOnly} placeholder="Not Provided"/>
+    <div className="rounded-2xl border border-slate-200 bg-white p-4">
+      <FormikInput
+        name={name}
+        label={label}
+        type={type ?? "text"}
+        readonly={readOnly}
+        placeholder="Not Provided"
+      />
     </div>
   );
 }
