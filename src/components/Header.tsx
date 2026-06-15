@@ -46,7 +46,7 @@ const Header = ({ user }: Redux_props) => {
         <Link
           to="/about"
           className="
-            hidden
+          
             sm:block
 
             rounded-lg
