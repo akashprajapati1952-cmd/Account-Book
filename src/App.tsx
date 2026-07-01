@@ -10,7 +10,7 @@ import { removeUserErrorAction, userRelogin } from './reducers/userSlice';
 import CustomerTxns from './pages/CustomerTxns.page';
 import UserProfile from './pages/UserProfile.page';
 import ForgotPasswordPage from './pages/ForgotPassword.page';
-import Test from './components/Test';
+import Test from './pages/VoicePlayground.page';
 import Message from './components/Message';
 import { connect, type ConnectedProps } from 'react-redux';
 import { removeCustomerErrorAction } from './reducers/customerSlice';
