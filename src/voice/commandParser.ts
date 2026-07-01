@@ -1,6 +1,6 @@
 import {
   COMMANDS,
-  VoiceCommandDefinition,
+  type VoiceCommandDefinition,
 } from "./commands";
 
 export interface ParsedCommand {

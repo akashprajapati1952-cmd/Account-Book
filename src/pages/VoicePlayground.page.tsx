@@ -27,29 +27,18 @@ const VoicePlayground = () => {
   };
 
   return (
-    <div style={{ padding: 20 }}>
+    <div className="p-20">
       <h1>Voice Playground</h1>
 
-      <button onClick={handleListen}>
-        Start Listening
-      </button>
-
-      <button onClick={handleStop}>
-        Stop Listening
-      </button>
-
-      <button onClick={handleGetTranscript}>
-        Get Transcript
-      </button>
-
-      <button onClick={handleSpeak}>
-        Speak
-      </button>
-
-      <button onClick={handleParse}>
-        Parse Command
-      </button>
-
+      <div
+  className=" flex gap-10 mb-20 flex-wrap"
+>
+  <button type="button" onClick={handleListen}>Start Listening</button>
+  <button type="button" onClick={handleStop}>Stop Listening</button>
+  <button type="button" onClick={handleGetTranscript}>Get Transcript</button>
+  <button type="button" onClick={handleSpeak}>Speak</button>
+  <button type="button" onClick={handleParse}>Parse Command</button>
+</div>
       <br />
       <br />
 

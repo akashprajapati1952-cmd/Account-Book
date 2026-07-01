@@ -1,4 +1,4 @@
-import {
+import type {
   VoiceEventCallback,
   VoiceEventType,
   VoiceOutputOptions,
@@ -23,6 +23,14 @@ class VoiceOutput {
     pause: [],
     resume: [],
     error: [],
+    result: [],
+    nomatch: [],
+    speechstart: [],
+    speechend: [],
+    audiostart: [],
+    audioend: [],
+    soundstart: [],
+    soundend: [],
   };
 
   constructor() {
@@ -283,10 +291,18 @@ class VoiceOutput {
   public removeAllListeners = (): void => {
     this.events = {
       start: [],
-      end: [],
-      pause: [],
-      resume: [],
-      error: [],
+    end: [],
+    pause: [],
+    resume: [],
+    error: [],
+    result: [],
+    nomatch: [],
+    speechstart: [],
+    speechend: [],
+    audiostart: [],
+    audioend: [],
+    soundstart: [],
+    soundend: [],
     };
   };
 /**

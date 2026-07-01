@@ -108,3 +108,15 @@ export const COMMANDS: readonly VoiceCommandDefinition[] = [
     description: "Logout User",
   },
 ] as const;
+export enum VoiceCommandId {
+  OPEN_DASHBOARD = "OPEN_DASHBOARD",
+  OPEN_CUSTOMER = "OPEN_CUSTOMER",
+  OPEN_SUPPLIER = "OPEN_SUPPLIER",
+  OPEN_LEDGER = "OPEN_LEDGER",
+  OPEN_TRANSACTION = "OPEN_TRANSACTION",
+  ADD_CUSTOMER = "ADD_CUSTOMER",
+  DELETE_CUSTOMER = "DELETE_CUSTOMER",
+  SAVE = "SAVE",
+  CANCEL = "CANCEL",
+  LOGOUT = "LOGOUT",
+}

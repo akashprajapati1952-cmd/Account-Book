@@ -1,17 +1,11 @@
-import {
+import type {
   VoiceEventCallback,
   VoiceEventType,
 } from "./types";
 
-declare global {
-  interface Window {
-    SpeechRecognition: typeof SpeechRecognition;
-    webkitSpeechRecognition: typeof SpeechRecognition;
-  }
-}
 
 class VoiceInput {
-  private recognition: SpeechRecognition;
+  private recognition: any;
 
   private listening = false;
 
@@ -25,7 +19,6 @@ class VoiceInput {
 
   private maxAlternatives = 1;
   
-  private transcriptHistory: string[] = [];
 
   private events: Record<VoiceEventType, VoiceEventCallback[]> = {
     start: [],
@@ -33,6 +26,14 @@ class VoiceInput {
     pause: [],
     resume: [],
     error: [],
+    result: [],
+    nomatch: [],
+    speechstart: [],
+    speechend: [],
+    audiostart: [],
+    audioend: [],
+    soundstart: [],
+    soundend: [],
   };
 
   constructor() {
@@ -46,14 +47,10 @@ class VoiceInput {
       );
     }
 
-    this.recognition = new SpeechRecognitionAPI();
+   this.recognition = new SpeechRecognitionAPI();
 
-    this.recognition.lang = this.language;
-    this.recognition.continuous = this.continuous;
-    this.recognition.interimResults = this.interimResults;
-    this.recognition.maxAlternatives = this.maxAlternatives;
-    this.configureRecognition();
-    this.registerEvents();
+  this.configureRecognition();
+  this.registerEvents();
   }
 
   // Browser Support
@@ -64,72 +61,7 @@ class VoiceInput {
     );
   };
 
-  // Listening
-  public startListening = (): void => {};
-
-  public stopListening = (): void => {};
-
-  public abortListening = (): void => {};
-
-  public restartListening = (): void => {};
-
-  // Transcript
-  public getTranscript = (): string => "";
-
-  public clearTranscript = (): void => {};
-
-  // Status
-  public isListening = (): boolean => false;
-
-  // Configuration
-  public setLanguage = (lang: string): void => {};
-
-  public getLanguage = (): string => "";
-
-  public setContinuous = (value: boolean): void => {};
-
-  public getContinuous = (): boolean => false;
-
-  public setInterimResults = (value: boolean): void => {};
-
-  public getInterimResults = (): boolean => false;
-
-  public setMaxAlternatives = (value: number): void => {};
-
-  public getMaxAlternatives = (): number => 1;
-
-  // Events
-  public onStart = (
-    callback: VoiceEventCallback
-  ): (() => void) => {
-    return () => {};
-  };
-
-  public onEnd = (
-    callback: VoiceEventCallback
-  ): (() => void) => {
-    return () => {};
-  };
-
-  public onResult = (
-    callback: VoiceEventCallback
-  ): (() => void) => {
-    return () => {};
-  };
-
-  public onError = (
-    callback: VoiceEventCallback
-  ): (() => void) => {
-    return () => {};
-  };
-
-  public onNoMatch = (
-    callback: VoiceEventCallback
-  ): (() => void) => {
-    return () => {};
-  };
-
-  public removeAllListeners = (): void => {};
+ 
   /**
  * Emit Event
  */
@@ -160,51 +92,51 @@ class VoiceInput {
  * Register Browser Events
  */
   private registerEvents = (): void => {
-    this.recognition.onstart = (event) => {
+    this.recognition.onstart = (event: Event) => {
       this.listening = true;
       this.emit("start", event);
     };
 
-    this.recognition.onend = (event) => {
+    this.recognition.onend = (event: Event) => {
       this.listening = false;
       this.emit("end", event);
     };
 
-    this.recognition.onresult = (event) => {
+    this.recognition.onresult = (event: SpeechRecognitionEvent) => {
       this.transcript =
         event.results[event.resultIndex][0].transcript;
       this.emit("result", event);
     };
 
-    this.recognition.onerror = (event) => {
+    this.recognition.onerror = (event: SpeechRecognitionEvent) => {
       this.emit("error", event);
     };
   
-    this.recognition.onnomatch = (event) => {
+    this.recognition.onnomatch = (event: Event) => {
       this.emit("nomatch", event);
     };
 
-    this.recognition.onspeechstart = (event) => {
+    this.recognition.onspeechstart = (event: Event) => {
       this.emit("speechstart", event);
     };
 
-    this.recognition.onspeechend = (event) => {
+    this.recognition.onspeechend = (event: Event) => {
       this.emit("speechend", event);
     };
 
-    this.recognition.onaudiostart = (event) => {
+    this.recognition.onaudiostart = (event: Event) => {
       this.emit("audiostart", event);
     };
 
-    this.recognition.onaudioend = (event) => {
+    this.recognition.onaudioend = (event: Event) => {
       this.emit("audioend", event);
     };
 
-    this.recognition.onsoundstart = (event) => {
+    this.recognition.onsoundstart = (event: Event) => {
       this.emit("soundstart", event);
     };
 
-    this.recognition.onsoundend = (event) => {
+    this.recognition.onsoundend = (event: Event) => {
       this.emit("soundend", event);
     };
   };
