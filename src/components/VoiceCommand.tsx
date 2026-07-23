@@ -24,9 +24,7 @@ const VoiceCommand: FC = () => {
         });
     }, []);
 
-    const handleGetTranscript = () => {
-      setTranscript(VoiceInput.getTranscript());
-    };
+  
 
     const handleParse = () => {
       console.log();
