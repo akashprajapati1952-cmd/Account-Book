@@ -17,7 +17,7 @@ const VoiceCommand: FC = () => {
         VoiceInput.onResult(()=>{
             const parsedCommand = commandParser.parse(VoiceInput.getTranscript());
             if(!parsedCommand){
-                VoiceOutput.speak("chhama kare main samajh nahi payi");
+                VoiceOutput.speak("क्षमा करें मै समझ नहीं पाई");
                 return
             }
             setTranscript(parsedCommand?.command)
