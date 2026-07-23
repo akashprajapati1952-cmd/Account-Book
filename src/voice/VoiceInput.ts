@@ -11,7 +11,7 @@ class VoiceInput {
 
   private transcript = "";
 
-  private language = "hi-IN";
+  private language = "en-US";
 
   private continuous = false;
 

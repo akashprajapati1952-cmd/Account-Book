@@ -2,6 +2,7 @@ import { connect, type ConnectedProps } from "react-redux";
 import { userSelector } from "../selectors/userSelectors";
 import type { State } from "../store/store";
 import { Link, useNavigate } from "react-router-dom";
+import { BsMicFill } from "react-icons/bs";
 
 const Header = ({ user }: Redux_props) => {
   const navigate = useNavigate();
@@ -31,40 +32,7 @@ const Header = ({ user }: Redux_props) => {
       "
     >
       {/* Logo */}
-      <div>
-        <h1 className="text-xl font-bold tracking-wide">
-          Account Book
-        </h1>
-
-        <p className="text-xs text-indigo-100">
-          Manage customer transactions
-        </p>
-      </div>
-
-      {/* Navigation */}
-      <div className="flex items-center gap-4">
-        <Link
-          to="/about"
-          className="
-          
-            sm:block
-
-            rounded-lg
-
-            px-3
-            py-1.5
-
-            text-sm
-            font-medium
-
-            transition-all
-
-            hover:bg-white/20
-          "
-        >
-          About
-        </Link>
-
+      <div className="flex gap-5">
         <button
           type="button"
           aria-label="Open profile"
@@ -98,6 +66,43 @@ const Header = ({ user }: Redux_props) => {
             alt="Profile"
           />
         </button>
+        <div>
+          <h1 className="text-xl font-bold tracking-wide">
+            Account Book
+          </h1>
+
+          <p className="text-xs text-indigo-100">
+            Manage customer transactions
+          </p>
+        </div>
+      </div>
+
+      {/* Navigation */}
+      <div className="flex items-center gap-4">
+        <BsMicFill /> 
+        <Link
+          to="/about"
+          className="
+          
+            sm:block
+
+            rounded-lg
+
+            px-3
+            py-1.5
+
+            text-sm
+            font-medium
+
+            transition-all
+
+            hover:bg-white/20
+          "
+        >
+          About
+        </Link>
+
+        
       </div>
     </header>
   );

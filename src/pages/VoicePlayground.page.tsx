@@ -5,7 +5,7 @@ import commandParser from "../voice/commandParser";
 
 const VoicePlayground = () => {
   const [transcript, setTranscript] = useState("");
-
+  const [text, setText]= useState("Akash")
   const handleListen = () => {
     VoiceInput.startListening();
   };
@@ -15,7 +15,7 @@ const VoicePlayground = () => {
   };
 
   const handleSpeak = () => {
-    VoiceOutput.speak("Hello Akash, Welcome to Account Book.");
+    VoiceOutput.speak(text);
   };
 
   const handleGetTranscript = () => {
@@ -38,6 +38,7 @@ const VoicePlayground = () => {
   <button type="button" onClick={handleGetTranscript}>Get Transcript</button>
   <button type="button" onClick={handleSpeak}>Speak</button>
   <button type="button" onClick={handleParse}>Parse Command</button>
+  <input type="text" onChange={(e)=>setText(e.target.value)} value={text}/>
 </div>
       <br />
       <br />
