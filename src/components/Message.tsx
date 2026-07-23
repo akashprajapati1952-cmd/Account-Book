@@ -82,7 +82,7 @@ function Alert({
         <button
           type="button"
           aria-label="Close notification"
-          onClick={removeAlert}
+          onClick={()=>removeAlert()}
           className="
             rounded-lg
             p-1
