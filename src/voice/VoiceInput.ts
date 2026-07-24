@@ -172,7 +172,9 @@ class VoiceInput {
     this.abortListening();
     this.startListening();
   };
+  
   /**
+  
  * Get Transcript
  */
   public getTranscript = (): string => {

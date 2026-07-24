@@ -1,12 +1,15 @@
+import type { UnknownAction } from "redux";
 import { VoiceCommandId } from "./commands";
 import VoiceOutput from "./VoiceOutput";
 
 export interface CommandExecutorContext {
-  navigate?: (path: string) => void;
+  navigate: (path: string) => void;
 
-  dispatch?: (action: unknown) => void;
+  dispatch: (action: UnknownAction) => void;
 
-  actions?: Record<string, () => void>;
+  actions: Record<string, Function>;
+
+  location: string;
 }
 
 class CommandExecutor {
@@ -16,26 +19,28 @@ class CommandExecutor {
   ): boolean => {
     switch (command) {
       case VoiceCommandId.OPEN_DASHBOARD:
-        context.navigate?.("/dashboard");
+        if(context.location === "/dashboard"){
+          VoiceOutput.speak("Already on Dashboard");
+          return true;
+        }
+        context.navigate("/dashboard");
         VoiceOutput.speak("Opening Dashboard");
         return true;
 
       case VoiceCommandId.OPEN_CUSTOMER:
-        context.navigate?.("/customers");
+        if(context.location === "/"){
+          VoiceOutput.speak("Already on Customer");
+          return true;
+        }
+        context.navigate?.("/");
         VoiceOutput.speak("Opening Customer");
         return true;
-
-      case VoiceCommandId.OPEN_SUPPLIER:
-        context.navigate?.("/suppliers");
-        VoiceOutput.speak("Opening Supplier");
-        return true;
-
-      case VoiceCommandId.OPEN_LEDGER:
-        context.navigate?.("/ledger");
-        VoiceOutput.speak("Opening Ledger");
-        return true;
-
+        
       case VoiceCommandId.OPEN_TRANSACTION:
+        if(context.location === "/transactions"){
+          VoiceOutput.speak("Already on Transaction");
+          return true;
+        }
         context.navigate?.("/transactions");
         VoiceOutput.speak("Opening Transaction");
         return true;
