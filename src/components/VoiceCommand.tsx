@@ -2,12 +2,14 @@ import {type FC, useEffect, useState } from "react";
 import { BsMicFill } from "react-icons/bs";
 import VoiceInput from "../voice/VoiceInput";
 import VoiceOutput from "../voice/VoiceOutput";
-import commandParser from "../voice/commandParser";
+import commandParser, { type ParsedCommand } from "../voice/commandParser";
 import type { VoiceCommandDefinition, VoiceCommandId } from "../voice/commands";
 import commandExecutor from "../voice/commandExecutor";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useLocation, useNavigate } from "react-router-dom";
 import actions from "../Tools_And_Data/actions";
+import type { CustomersWithId } from "../models";
+import { customerListSelector } from "../selectors/customerSelectors";
 
 
 
@@ -15,21 +17,31 @@ const VoiceCommand: FC = () => {
     const dispatch=useDispatch();
     const navigate=useNavigate();
     const location=useLocation();
-    const [transcript, setTranscript] = useState<VoiceCommandDefinition | null>(null);
+    const [command, setCommand] = useState<ParsedCommand | null>(null);
+    
+    const customers=useSelector(customerListSelector);
+
+    
     useEffect(()=>{
-        if(transcript){
-            commandExecutor.execute(transcript.id as VoiceCommandId, {dispatch,navigate,actions,location:location.pathname});
+      if(VoiceInput.getTranscript()){
+        const customer=customers.find((customer)=>customer.name.toLowerCase() === command?.params?.customerName?.toLowerCase());
+        if(command  ?.command){
+            commandExecutor.execute(command?.command.id as VoiceCommandId, {dispatch,navigate,actions,location:location.pathname,params: {customerId: customer?.customerId ?? undefined}});
+            setCommand(null);
         }
-    },[transcript])
+      }
+    },[command?.command, customers])
 
     useEffect(()=>{
         VoiceInput.onResult(()=>{
+  
             const parsedCommand = commandParser.parse(VoiceInput.getTranscript());
+    
             if(!parsedCommand){
                 VoiceOutput.speak("क्षमा करें मै समझ नहीं पाई");
                 return
             }
-            setTranscript(parsedCommand?.command)
+            setCommand(parsedCommand)
         });
     }, []);
 0

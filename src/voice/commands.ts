@@ -2,7 +2,8 @@
 
 export interface VoiceCommandDefinition {
   id: string;
-  phrases: string[];
+  phrases?: string[];
+  patterns?: RegExp[];
   description: string;
 }
 
@@ -49,11 +50,7 @@ export const COMMANDS: readonly VoiceCommandDefinition[] = [
 
   {
     id: "OPEN_TRANSACTION",
-    phrases: [
-      "open transaction",
-      "transaction kholo",
-      "go to transaction",
-    ],
+    patterns: [ /^(.+)\s+ki\s+transaction\s+kholo$/i, /^open\s+(.+)\s+transactions?$/i, /^show\s+(.+)\s+transactions?$/i, ],
     description: "Navigate to Transaction",
   },
 

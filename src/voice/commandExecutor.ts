@@ -10,6 +10,10 @@ export interface CommandExecutorContext {
   actions: Record<string, Function>;
 
   location: string;
+
+  params?: {
+    customerId?: string;
+  };
 }
 
 class CommandExecutor {
@@ -37,26 +41,16 @@ class CommandExecutor {
         return true;
         
       case VoiceCommandId.OPEN_TRANSACTION:
-        if(context.location === "/transactions"){
+        if(context.location.match(/^\/customer\/.+$/)){
           VoiceOutput.speak("Already on Transaction");
           return true;
         }
-        context.navigate?.("/transactions");
+        context.navigate?.(`/customer/${context.params?.customerId}`);
         VoiceOutput.speak("Opening Transaction");
         return true;
 
-      case VoiceCommandId.SAVE:
-        context.actions?.save?.();
-        VoiceOutput.speak("Saved Successfully");
-        return true;
-
-      case VoiceCommandId.CANCEL:
-        context.actions?.cancel?.();
-        VoiceOutput.speak("Cancelled");
-        return true;
-
       case VoiceCommandId.LOGOUT:
-        context.actions?.logout?.();
+        context.dispatch?.(context.actions?.logoutAction());
         VoiceOutput.speak("Logging Out");
         return true;
 
