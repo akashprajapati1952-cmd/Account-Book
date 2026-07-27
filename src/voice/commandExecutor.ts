@@ -54,6 +54,26 @@ class CommandExecutor {
         VoiceOutput.speak("Logging Out");
         return true;
 
+      case VoiceCommandId.ADD_CUSTOMER:
+        
+        VoiceOutput.speak("Please provide customer details to add a new customer");
+        return true;
+
+      case VoiceCommandId.LOGIN:
+        context.navigate("/login");
+        VoiceOutput.speak("Please provide your login credentials");
+        return true;
+
+      case VoiceCommandId.FORGET_PASSWORD:
+        context.navigate("/forgot-password");
+        VoiceOutput.speak("Please provide your email to reset your password");
+        return true;
+
+      case VoiceCommandId.SIGNUP:
+        context.navigate("/signup");
+        VoiceOutput.speak("Please provide your details to create an account");
+        return true;
+
       default:
         VoiceOutput.speak("Command not found");
         return false;

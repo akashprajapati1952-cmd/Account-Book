@@ -4,6 +4,7 @@ import UserReducer from "../reducers/userSlice";
 import customersReducer from "../reducers/customerSlice";
 import { useDispatch, useSelector, type TypedUseSelectorHook } from "react-redux";
 import dashboardReducer from "../reducers/dashboardSlice";
+import formsStateReducer from "../reducers/formsState";
 
 
 const store=configureStore({
@@ -11,7 +12,8 @@ const store=configureStore({
     reducer:{
       user: UserReducer,
       customers: customersReducer,
-      dashboard: dashboardReducer
+      dashboard: dashboardReducer,
+      formsState: formsStateReducer,
     },
     devTools: import.meta.env.DEV,
 })
