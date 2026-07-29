@@ -41,8 +41,12 @@ class CommandExecutor {
         return true;
         
       case VoiceCommandId.OPEN_TRANSACTION:
-        if(context.location.match(/^\/customer\/.+$/)){
+        if(context.location.match(/^\/customer\/.+$/) && context.location === `/customer/${context.params?.customerId}`){
           VoiceOutput.speak("Already on Transaction");
+          return true;
+        }
+        if(!context.params?.customerId){
+          VoiceOutput.speak("Customer not found")
           return true;
         }
         context.navigate?.(`/customer/${context.params?.customerId}`);
@@ -54,24 +58,85 @@ class CommandExecutor {
         VoiceOutput.speak("Logging Out");
         return true;
 
+      case VoiceCommandId.OPEN_ABOUT:
+        if(context.location === "/about"){
+          VoiceOutput.speak("Already in About section");
+          return true;
+        }
+        context.navigate?.("/about");
+        VoiceOutput.speak("Opening About section");
+        return true;
+
+      case VoiceCommandId.OPEN_ACCOUNT:
+        if(context.location === "/userProfile"){
+          VoiceOutput.speak("Already in profile section");
+          return true;
+        }
+        context.navigate?.("/userProfile");
+        VoiceOutput.speak("Opening profile section");
+        return true;
+
       case VoiceCommandId.ADD_CUSTOMER:
-        
-        VoiceOutput.speak("Please provide customer details to add a new customer");
+        if(context.location !== "/"){
+          context.navigate?.("/");
+        }
+        context.dispatch?.(context.actions?.setAddingCustomer(true));
+        VoiceOutput.speak("Opening input box for Adding Customer");
+        return true;
+
+      case VoiceCommandId.GO_BACK:
+        try{
+          context.navigate?.(-1);
+        }catch(e){
+          VoiceOutput.speak("Cannot go back from this page");
+          return true;
+        }
+        VoiceOutput.speak("Going back to the previous page");
         return true;
 
       case VoiceCommandId.LOGIN:
-        context.navigate("/login");
-        VoiceOutput.speak("Please provide your login credentials");
+        
+        VoiceOutput.speak("This feature is not implemented yet");
         return true;
 
       case VoiceCommandId.FORGET_PASSWORD:
-        context.navigate("/forgot-password");
-        VoiceOutput.speak("Please provide your email to reset your password");
+   
+        VoiceOutput.speak("This feature is not implemented yet");
         return true;
 
       case VoiceCommandId.SIGNUP:
-        context.navigate("/signup");
-        VoiceOutput.speak("Please provide your details to create an account");
+      
+        VoiceOutput.speak("This feature is not implemented yet");
+        return true;
+
+      case VoiceCommandId.DELETE_CUSTOMER:
+        VoiceOutput.speak("This feature is not implemented yet");
+        return true;
+
+      case VoiceCommandId.DELETE_USER:
+        VoiceOutput.speak("This feature is not implemented yet");
+        return true;
+
+      case VoiceCommandId.ADD_RECEIVED:
+        if(!context.location.match(/^\/customer\/.+$/)){
+          VoiceOutput.speak("Please go to the customer account in which you want to add the transaction")
+          return true;
+        }
+        context.dispatch?.(context.actions?.setAddingReceived(true));
+        VoiceOutput.speak("Opening input box for Received Transaction");
+        return true;
+
+      case VoiceCommandId.ADD_GIVEN:
+        if(!context.location.match(/^\/customer\/.+$/)){
+          VoiceOutput.speak("Please go to the customer account in which you want to add the transaction")
+          return true;
+        }
+        context.dispatch?.(context.actions?.setAddingGiven(true));
+        VoiceOutput.speak("Opening input box for Given Transaction");
+        return true;
+
+      case VoiceCommandId.SEARCH_CUSTOMER:
+        VoiceOutput.speak("This feature is not implemented yet");
         return true;
 
       default:

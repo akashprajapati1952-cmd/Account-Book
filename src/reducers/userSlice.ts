@@ -12,6 +12,22 @@ interface UserState {
     error: {message: string | null; type: string | null}
 }
 
+const initialState: UserState = {
+        user:{
+          email: '',
+          mobile: '',
+          gender: '',
+          name: '',
+          img:'',
+          businessName: '',
+          businessType: '',
+          address: '',
+          zipCode: '',
+        } ,
+        loading: false,
+        error: {message: "", type:''}
+    }
+
 export const uploadImg=createAsyncThunk('user/upload-image', async({file}: {file: File; message: string},thunkAPI) => {
     try{
       const formData= new FormData()
@@ -171,7 +187,9 @@ export const deleteAccount = createAsyncThunk(
 
 const setUser = (state: UserState, user: User ) => {
     for (const key in user) {
-      (state.user as any)[key] = (user as any)[key];
+        const typedKey = key as keyof User;
+        if(!user[typedKey]) return;   
+        state.user[typedKey] = user[typedKey];
     }
 }
 
@@ -188,21 +206,7 @@ const removeError=(state:UserState)=>{
 
 const userSlice = createSlice({
     name: "user",
-    initialState: {
-        user:{
-          email: '',
-          mobile: '',
-          gender: '',
-          name: '',
-          img:'',
-          businessName: '',
-          businessType: '',
-          address: '',
-          zipCode: '',
-        } ,
-        loading: false,
-        error: {message: "", type:''}
-    } as UserState,
+    initialState,
     reducers: {
         logout,
         removeError

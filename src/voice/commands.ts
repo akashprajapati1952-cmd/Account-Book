@@ -120,6 +120,40 @@ export const COMMANDS: readonly VoiceCommandDefinition[] = [
       "customer search karo",
     ],
     description: "Search Customer",
+  },
+
+  {
+    id: "OPEN_ABOUT",
+    phrases: [
+      "open about section",
+      "go to about section",
+      "open about",
+      "go to about"
+    ],
+    description: "open about section"
+  },
+
+  {
+    id: "OPEN_ACCOUNT",
+    phrases:[
+      "open account section",
+      "go to account section",
+      "open account",
+      "go to account",
+      "go to profile section",
+      "open profile section",
+      "open profile",
+      "go to profile"
+    ],
+    description: "open account section"
+  },
+
+  {
+    id: "GO_BACK",
+    phrases:[
+      "go back",
+    ],
+    description: "Go back to the previous page"
   }
 ] as const;
 export enum VoiceCommandId {
@@ -136,4 +170,7 @@ export enum VoiceCommandId {
   ADD_RECEIVED = "ADD_RECEIVED",
   ADD_GIVEN = "ADD_GIVEN",
   SEARCH_CUSTOMER = "SEARCH_CUSTOMER",
+  OPEN_ABOUT="OPEN_ABOUT",
+  OPEN_ACCOUNT="OPEN_ACCOUNT",
+  GO_BACK="GO_BACK"
 }

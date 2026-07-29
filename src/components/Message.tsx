@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import { ImCross } from "react-icons/im";
+import VoiceOutput from "../voice/VoiceOutput";
 
 interface AlertProps {
   alert: {
@@ -39,6 +40,8 @@ function Alert({
     styles =
       "border-red-200 bg-red-50 text-red-800";
   }
+
+  VoiceOutput.speak(alert.message);
 
   return (
     <div

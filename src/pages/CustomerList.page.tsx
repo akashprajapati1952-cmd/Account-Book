@@ -12,6 +12,8 @@ import { useEffect, useState } from "react";
 import Custommer from "../components/Customer";
 import { ImCross } from "react-icons/im";
 import * as Yup from "yup";
+import { setAddingCustomer } from "../reducers/formsState";
+import { addingCustomerSelector } from "../selectors/formsStateSelector";
 
 function CustomerList({
   customers,
@@ -20,8 +22,10 @@ function CustomerList({
   searchResults,
   loading,
   onLoading,
+  isAdding,
+  setIsAdding,
 }: Redux_props) {
-  const [isAdding, setIsAdding] = useState(false);
+  
   const [search, setSearch] = useState("");
 
   useEffect(() => {
@@ -252,12 +256,14 @@ const mapStateToProps = (state: State) => ({
   customers: customerListSelector(state),
   searchResults: state.customers.searchResults,
   loading: state.customers.seaching,
+  isAdding: addingCustomerSelector(state),
 });
 
 const mapDispatchToProps = {
   addCustomer,
   searchCustomer,
   onLoading: onCustomerLoading,
+  setIsAdding: setAddingCustomer
 };
 
 const connectedComp = connect(
