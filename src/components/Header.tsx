@@ -8,6 +8,8 @@ import VoiceCommand from "./VoiceCommand";
 const Header = ({ user }: Redux_props) => {
   const navigate = useNavigate();
 
+  const isLoggedIn = !!user.name;
+
   return (
     <header
       className="
@@ -80,7 +82,7 @@ const Header = ({ user }: Redux_props) => {
 
       {/* Navigation */}
       <div className="flex items-center gap-4">
-        <VoiceCommand /> 
+        <VoiceCommand isLoggedIn={isLoggedIn}/> 
         <Link
           to="/about"
           className="

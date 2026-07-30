@@ -94,6 +94,7 @@ export const COMMANDS: readonly VoiceCommandDefinition[] = [
     phrases: [
       "delete user",
       "remove user",
+      "delete account",
     ],
     description: "Delete User",
   },

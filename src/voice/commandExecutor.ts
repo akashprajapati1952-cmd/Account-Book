@@ -11,13 +11,14 @@ export interface CommandExecutorContext {
 
   location: string;
 
+  isLoggedIn: Boolean;
+
   params?: {
     customerId?: string;
   };
 }
 
 class CommandExecutor {
-  private isLoggedIn: Boolean=false;
   public execute = (
     command: VoiceCommandId,
     context: CommandExecutorContext
@@ -96,18 +97,31 @@ class CommandExecutor {
         return true;
 
       case VoiceCommandId.LOGIN:
-        
-        VoiceOutput.speak("This feature is not implemented yet");
+        if(context.isLoggedIn){
+          VoiceOutput.speak("Already logged in");
+          return true;
+        }
+        context.navigate("/login")
+        VoiceOutput.speak("Opening login page");
         return true;
 
       case VoiceCommandId.FORGET_PASSWORD:
+        if(context.isLoggedIn){
+          VoiceOutput.speak("Already logged in");
+          return true;
+        }
         context.navigate("/forgotPassword")
-        VoiceOutput.speak("This feature is not implemented yet");
+        VoiceOutput.speak("Opening forget password page");
         return true;
 
       case VoiceCommandId.SIGNUP:
+        if(context.isLoggedIn){
+          VoiceOutput.speak("Already logged in");
+          return true;
+        }
+        context.navigate("/signup")
       
-        VoiceOutput.speak("This feature is not implemented yet");
+        VoiceOutput.speak("opening signup page");
         return true;
 
       case VoiceCommandId.DELETE_CUSTOMER:
@@ -128,8 +142,13 @@ class CommandExecutor {
         return true;
 
       case VoiceCommandId.DELETE_USER:
-        VoiceOutput.speak("This feature is not implemented yet");
+        if(!context.isLoggedIn){
+          VoiceOutput.speak("You are not logged in");
+          return true;
+        }
+        context.dispatch?.(context.actions?.deleteAccount({message: "Deleting Account..."}));
         return true;
+        
 
       case VoiceCommandId.ADD_RECEIVED:
         if(!context.location.match(/^\/customer\/.+$/)){
@@ -158,9 +177,6 @@ class CommandExecutor {
         return false;
     }
   };
-  constructor() {
-    
-  }
 }
 
 const commandExecutor = new CommandExecutor();

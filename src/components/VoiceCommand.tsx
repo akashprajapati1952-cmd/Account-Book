@@ -13,7 +13,7 @@ import { customerListSelector } from "../selectors/customerSelectors";
 
 
 
-const VoiceCommand: FC = () => {
+const VoiceCommand: FC<{isLoggedIn: Boolean}> = ({isLoggedIn}) => {
     const dispatch=useDispatch();
     const navigate=useNavigate();
     const location=useLocation();
@@ -26,7 +26,7 @@ const VoiceCommand: FC = () => {
       if(VoiceInput.getTranscript()){
         const customer=customers.find((customer)=>customer.name.toLowerCase() === command?.params?.customerName?.toLowerCase());
         if(command  ?.command){
-            commandExecutor.execute(command?.command.id as VoiceCommandId, {dispatch,navigate,actions,location:location.pathname,params: {customerId: customer?.customerId ?? undefined}});
+            commandExecutor.execute(command?.command.id as VoiceCommandId, {dispatch,navigate,actions,location:location.pathname,isLoggedIn,params: {customerId: customer?.customerId ?? undefined}});
             setCommand(null);
         }
       }
