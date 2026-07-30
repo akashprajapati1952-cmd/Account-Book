@@ -38,7 +38,7 @@ const VoiceCommand: FC = () => {
             const parsedCommand = commandParser.parse(VoiceInput.getTranscript());
     
             if(!parsedCommand){
-                VoiceOutput.speak("क्षमा करें मै समझ नहीं पाई");
+                VoiceOutput.speak("Sorry, I didn't understand that command.");
                 return
             }
             setCommand(parsedCommand)

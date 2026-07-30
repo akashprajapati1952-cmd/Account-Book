@@ -17,6 +17,7 @@ export interface CommandExecutorContext {
 }
 
 class CommandExecutor {
+  private isLoggedIn: Boolean=false;
   public execute = (
     command: VoiceCommandId,
     context: CommandExecutorContext
@@ -100,7 +101,7 @@ class CommandExecutor {
         return true;
 
       case VoiceCommandId.FORGET_PASSWORD:
-   
+        context.navigate("/forgotPassword")
         VoiceOutput.speak("This feature is not implemented yet");
         return true;
 
@@ -110,7 +111,20 @@ class CommandExecutor {
         return true;
 
       case VoiceCommandId.DELETE_CUSTOMER:
-        VoiceOutput.speak("This feature is not implemented yet");
+        if(!context.location.match(/^\/customer\/.+$/)){
+          VoiceOutput.speak("Please go to the customer account which you want to delete")
+          return true;
+        }
+        const customerId = context.location.split("/")[2];
+        if(!customerId){
+          VoiceOutput.speak("Customer not found");
+          return true;
+        }
+        context.dispatch?.(context.actions?.deleteCustomer({
+              customerId: customerId,
+              message: "Deleting Customer...",
+            }));
+        context.navigate?.("/");
         return true;
 
       case VoiceCommandId.DELETE_USER:
@@ -144,6 +158,9 @@ class CommandExecutor {
         return false;
     }
   };
+  constructor() {
+    
+  }
 }
 
 const commandExecutor = new CommandExecutor();

@@ -195,7 +195,8 @@ const setUser = (state: UserState, user: User ) => {
 
 const logout= (state: UserState)=>{
     localStorage.removeItem("token")
-    setUser(state,userSlice.getInitialState().user)
+    Object.assign(state,userSlice.getInitialState())
+    
 }
 
 
