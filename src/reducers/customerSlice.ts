@@ -6,20 +6,21 @@ import axios from "axios";
 
 type CustomerState={
  customers: Record<string, CustomersWithId>;
- searchResults: Record<string, CustomersWithId>;
+
  loading:boolean;
+ query: string;
  error:{message: string | null; type: string | null};
- seaching: boolean
+ 
 }
 const initialState: CustomerState={
  customers:{},
- searchResults:{},
  loading:false,
  error:{
   message:null,
   type:null
  },
- seaching: false
+ query: ""
+ 
 }
 
 export const deleteCustomer=createAsyncThunk('customer/delete',async({customerId}:{customerId: string; message: string},thunkAPI)=>{
@@ -117,9 +118,11 @@ const setCustomers=(state: CustomerState, action: PayloadAction<Record<string, C
     ])
     )
 }
-const openCustomerLoading=(state: CustomerState, action: PayloadAction<boolean>)=>{
-  state.seaching=action.payload
+
+const setQuery=(state: CustomerState, action: PayloadAction<string>)=>{
+  state.query= action.payload
 }
+
 
 const removeError=(state: CustomerState)=>{
     state.error={message: null,type: null}
@@ -130,7 +133,7 @@ const customerSlice=createSlice({
     reducers: {
       setCustomers,
       removeError,
-      openCustomerLoading
+      setQuery
     },
     extraReducers: (builder) => {
         builder.addCase(addCustomer.fulfilled, (state, action) => {
@@ -158,8 +161,8 @@ const customerSlice=createSlice({
             state.error={type:"success",message: action.payload.data.message}
         }).addCase(searchCustomer.fulfilled,(state,action)=>{
           state.loading=false
-          state.searchResults =action.payload.customers
-          state.seaching=false
+          state.customers =action.payload.customers
+          
        })
         builder.addMatcher((action)=>action.type.startsWith("customer/") && action.type.endsWith("/pending"), (state,action) => {
             state.loading = true;
@@ -174,5 +177,5 @@ const customerSlice=createSlice({
 })
 
 const {actions, reducer: customerReducer}=customerSlice;
-export const  {setCustomers: setCustomersAction, removeError:removeCustomerErrorAction, openCustomerLoading: onCustomerLoading}= actions;
+export const  {setCustomers: setCustomersAction,setQuery: setQueryAction, removeError:removeCustomerErrorAction}= actions;
 export default customerReducer;

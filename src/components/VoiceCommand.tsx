@@ -24,10 +24,12 @@ const VoiceCommand: FC<{isLoggedIn: Boolean}> = ({isLoggedIn}) => {
     
     useEffect(()=>{
       if(VoiceInput.getTranscript()){
+        
         const customer=customers.find((customer)=>customer.name.toLowerCase() === command?.params?.customerName?.toLowerCase());
         if(command  ?.command){
-            commandExecutor.execute(command?.command.id as VoiceCommandId, {dispatch,navigate,actions,location:location.pathname,isLoggedIn,params: {customerId: customer?.customerId ?? undefined}});
+            commandExecutor.execute(command?.command.id as VoiceCommandId, {dispatch,navigate,actions,location:location.pathname,isLoggedIn,params: {customerId: customer?.customerId ?? undefined , customerName: customer?.name ?? undefined}});
             setCommand(null);
+            VoiceInput.clearTranscript()
         }
       }
     },[command?.command, customers])
@@ -36,7 +38,7 @@ const VoiceCommand: FC<{isLoggedIn: Boolean}> = ({isLoggedIn}) => {
         VoiceInput.onResult(()=>{
   
             const parsedCommand = commandParser.parse(VoiceInput.getTranscript());
-    
+            
             if(!parsedCommand){
                 VoiceOutput.speak("Sorry, I didn't understand that command.");
                 return

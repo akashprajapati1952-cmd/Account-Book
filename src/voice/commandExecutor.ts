@@ -15,6 +15,7 @@ export interface CommandExecutorContext {
 
   params?: {
     customerId?: string;
+    customerName?: string;
   };
 }
 
@@ -169,7 +170,12 @@ class CommandExecutor {
         return true;
 
       case VoiceCommandId.SEARCH_CUSTOMER:
-        VoiceOutput.speak("This feature is not implemented yet");
+        if(!context.params?.customerId){
+          VoiceOutput.speak("Customer Not found")
+          return true;
+        }
+        context.dispatch(context.actions?.setQueryAction(context.params.customerName))
+        VoiceOutput.speak("searching customer");
         return true;
 
       default:

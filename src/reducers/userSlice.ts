@@ -176,6 +176,8 @@ export const deleteAccount = createAsyncThunk(
     try {
       const res = await axios.delete(BASE_URL+"/user/delete-account",{headers:{authorization: `Bearer ${localStorage.getItem("token")}`}});
       thunkAPI.dispatch(setCustomersAction({}))
+      
+      
       return res.data;
     } catch(error){
         if(axios.isAxiosError(error)){
@@ -236,9 +238,9 @@ const userSlice = createSlice({
             setUser(state, action.payload.user)
         }).addCase(deleteAccount.fulfilled,(state,action)=>{
             state.loading=false
-            const initialUser=userSlice.getInitialState().user
+            
             state.error={type:"success",message:action.payload.message}
-            setUser(state,initialUser)
+            logout(state)
         }).addCase(getForgetPasswordOtp.fulfilled,(state,action)=>{
             state.loading=false;
             state.error.message=action.payload
@@ -266,6 +268,7 @@ const userSlice = createSlice({
             const message=(action as any).meta.arg.message
             state.error.message=message;
             state.error.type="warning"
+           
         }).addMatcher((action)=>action.type.startsWith("user/") && action.type.endsWith('/rejected'),(state, action) => {
             state.loading = false;
             const message=(action as any).paylaod

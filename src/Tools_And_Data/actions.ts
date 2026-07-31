@@ -1,10 +1,10 @@
-import { addCustomer, addGiven, addTaken, deleteCustomer, onCustomerLoading, removeCustomerErrorAction, searchCustomer, setCustomersAction } from "../reducers/customerSlice";
+import { addCustomer, addGiven, addTaken, deleteCustomer, removeCustomerErrorAction, searchCustomer, setCustomersAction, setQueryAction } from "../reducers/customerSlice";
 import { getDashboard, getRecentTransactions } from "../reducers/dashboardSlice";
 import { setAddingCustomer, setAddingGiven, setAddingReceived } from "../reducers/formsState";
 import { deleteAccount, getEmailChangeOtp, getForgetPasswordOtp, logoutAction, removeUserErrorAction, updateUser, uploadImg, userLogin, userRelogin, userSignup, userVerify, verifyEmailChangeOtp, verifyForgetPasswordOtp } from "../reducers/userSlice";
 
 const actions: Record<string, Function> = {deleteCustomer,
-    onCustomerLoading,
+
     removeCustomerErrorAction,
     setCustomersAction,
     addCustomer,
@@ -28,7 +28,9 @@ const actions: Record<string, Function> = {deleteCustomer,
     removeUserErrorAction,
     setAddingReceived,
     setAddingGiven,
-    setAddingCustomer
+    setAddingCustomer,
+    setQueryAction
+    
 }
 
 export default actions

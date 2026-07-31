@@ -1,51 +1,43 @@
 import { connect, type ConnectedProps } from "react-redux";
-import { customerListSelector } from "../selectors/customerSelectors";
+import { customerListSelector, customerLoadingSelector, querySelector } from "../selectors/customerSelectors";
 import type { State } from "../store/store";
 import { Form, Formik } from "formik";
 import {
   addCustomer,
-  onCustomerLoading,
   searchCustomer,
+  setQueryAction,
 } from "../reducers/customerSlice";
 import FormikInput from "../components/FormikInput";
 import { useEffect, useState } from "react";
 import Custommer from "../components/Customer";
 import { ImCross } from "react-icons/im";
 import * as Yup from "yup";
-import { setAddingCustomer } from "../reducers/formsState";
 import { addingCustomerSelector } from "../selectors/formsStateSelector";
+import { setAddingCustomer } from "../reducers/formsState";
+
 
 function CustomerList({
   customers,
   addCustomer,
   searchCustomer,
-  searchResults,
   loading,
-  onLoading,
+  query,
   isAdding,
-  setIsAdding,
+  setIsAdding
 }: Redux_props) {
   
-  const [search, setSearch] = useState("");
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      if (search.trim()) {
-        searchCustomer({
-          query: search,
-        });
-      }
+      if (query.trim()) searchCustomer({query});
     }, 800);
 
     return () => clearTimeout(timer);
-  }, [search]);
+  }, [query]);
 
-  const displayCustomers =
-    !loading && search ? Object.values(searchResults) : customers;
 
   function handleSubmit(values: any) {
     addCustomer({ values, message: "Adding Customer" });
-    setIsAdding(false);
   }
 
   return (
@@ -60,14 +52,10 @@ function CustomerList({
           <input
             type="text"
             placeholder="Search customer..."
-            value={search}
-            onChange={(e) => {
-              const value = e.target.value;
-              setSearch(value);
-
-              if (!loading && value) onLoading(true);
-              if (!value) onLoading(false);
-            }}
+            value={query}
+            onChange={(e) =>{
+              console.log(e.target.value)
+              setQueryAction(e.target.value)}}
             className="
               w-full
               rounded-xl
@@ -89,9 +77,9 @@ function CustomerList({
       </div>
 
       {/* Customer List */}
-      {displayCustomers.length !== 0 ? (
+      {customers.length !== 0 ? (
         <section className="max-w-5xl mx-auto p-4 pb-28 flex flex-col gap-3">
-          {displayCustomers.map((c: any) => (
+          {customers.map((c: any) => (
             <Custommer
               key={c.customerId || c.name}
               customer={c}
@@ -254,21 +242,21 @@ function CustomerList({
 
 const mapStateToProps = (state: State) => ({
   customers: customerListSelector(state),
-  searchResults: state.customers.searchResults,
-  loading: state.customers.seaching,
-  isAdding: addingCustomerSelector(state),
+  loading: customerLoadingSelector(state),
+  query: querySelector(state),
+  isAdding:addingCustomerSelector(state)
 });
 
 const mapDispatchToProps = {
   addCustomer,
   searchCustomer,
-  onLoading: onCustomerLoading,
-  setIsAdding: setAddingCustomer
+  setQueryAction,
+  setIsAdding:setAddingCustomer
 };
 
 const connectedComp = connect(
   mapStateToProps,
-  mapDispatchToProps
+  mapDispatchToProps,
 );
 
 type Redux_props = ConnectedProps<typeof connectedComp>;

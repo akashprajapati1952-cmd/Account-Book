@@ -116,9 +116,9 @@ export const COMMANDS: readonly VoiceCommandDefinition[] = [
   },
   {
     id: "SEARCH_CUSTOMER",
-    phrases: [
-      "search customer",
-      "customer search karo",
+    patterns: [
+      /^search\s+(.+)$/i,
+      /^(.+?)\s+ko\s+search\s+karo$/i,
     ],
     description: "Search Customer",
   },

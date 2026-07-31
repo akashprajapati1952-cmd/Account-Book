@@ -10,3 +10,5 @@ export const customerSelector=(state: State, customerId: string)=>state.customer
 export const customerLoadingSelector=createSelector(customersSelector,(customers)=>customers.loading)
 
 export const customerErrorSelector=createSelector(customersSelector,(customers)=>customers.error)
+
+export const querySelector= createSelector(customersSelector,(customers)=>customers.query)
