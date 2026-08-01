@@ -7,6 +7,9 @@ export interface ParsedCommand {
   command: VoiceCommandDefinition;
   phrase: string;
   confidence: number;
+  params?: {
+    customerName?: string;
+  };
 }
 
 class CommandParser {
@@ -29,17 +32,33 @@ class CommandParser {
     const normalized = this.normalize(transcript);
 
     for (const command of COMMANDS) {
-      for (const phrase of command.phrases) {
-        if (normalized === this.normalize(phrase)) {
-          return {
-            command,
-            phrase,
-            confidence: 1,
-          };
+      if(command.patterns){
+        for (const pattern of command.patterns) {
+          const match = normalized.match(pattern);
+          if (match) {
+            return {
+              command,
+              phrase: transcript,
+              confidence: 1,
+              params:{
+                customerName: match[1]
+              }
+            };
+          }
+        }
+      }
+      if(command.phrases){
+        for (const phrase of command.phrases) {
+          if (normalized === this.normalize(phrase)) {
+            return {
+              command,
+              phrase,
+              confidence: 1,
+            };
+          }
         }
       }
     }
-
     return null;
   };
 

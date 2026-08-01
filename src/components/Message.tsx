@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import { ImCross } from "react-icons/im";
+import VoiceOutput from "../voice/VoiceOutput";
 
 interface AlertProps {
   alert: {
@@ -39,6 +40,8 @@ function Alert({
     styles =
       "border-red-200 bg-red-50 text-red-800";
   }
+
+  VoiceOutput.speak(alert.message);
 
   return (
     <div
@@ -82,7 +85,7 @@ function Alert({
         <button
           type="button"
           aria-label="Close notification"
-          onClick={removeAlert}
+          onClick={()=>removeAlert()}
           className="
             rounded-lg
             p-1

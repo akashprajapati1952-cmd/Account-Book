@@ -12,6 +12,22 @@ interface UserState {
     error: {message: string | null; type: string | null}
 }
 
+const initialState: UserState = {
+        user:{
+          email: '',
+          mobile: '',
+          gender: '',
+          name: '',
+          img:'',
+          businessName: '',
+          businessType: '',
+          address: '',
+          zipCode: '',
+        } ,
+        loading: false,
+        error: {message: "", type:''}
+    }
+
 export const uploadImg=createAsyncThunk('user/upload-image', async({file}: {file: File; message: string},thunkAPI) => {
     try{
       const formData= new FormData()
@@ -160,6 +176,8 @@ export const deleteAccount = createAsyncThunk(
     try {
       const res = await axios.delete(BASE_URL+"/user/delete-account",{headers:{authorization: `Bearer ${localStorage.getItem("token")}`}});
       thunkAPI.dispatch(setCustomersAction({}))
+      
+      
       return res.data;
     } catch(error){
         if(axios.isAxiosError(error)){
@@ -171,13 +189,16 @@ export const deleteAccount = createAsyncThunk(
 
 const setUser = (state: UserState, user: User ) => {
     for (const key in user) {
-      (state.user as any)[key] = (user as any)[key];
+        const typedKey = key as keyof User;
+        if(!user[typedKey]) return;   
+        state.user[typedKey] = user[typedKey];
     }
 }
 
 const logout= (state: UserState)=>{
     localStorage.removeItem("token")
-    setUser(state,userSlice.getInitialState().user)
+    Object.assign(state,userSlice.getInitialState())
+    
 }
 
 
@@ -188,21 +209,7 @@ const removeError=(state:UserState)=>{
 
 const userSlice = createSlice({
     name: "user",
-    initialState: {
-        user:{
-          email: '',
-          mobile: '',
-          gender: '',
-          name: '',
-          img:'',
-          businessName: '',
-          businessType: '',
-          address: '',
-          zipCode: '',
-        } ,
-        loading: false,
-        error: {message: "", type:''}
-    } as UserState,
+    initialState,
     reducers: {
         logout,
         removeError
@@ -231,9 +238,9 @@ const userSlice = createSlice({
             setUser(state, action.payload.user)
         }).addCase(deleteAccount.fulfilled,(state,action)=>{
             state.loading=false
-            const initialUser=userSlice.getInitialState().user
+            
             state.error={type:"success",message:action.payload.message}
-            setUser(state,initialUser)
+            logout(state)
         }).addCase(getForgetPasswordOtp.fulfilled,(state,action)=>{
             state.loading=false;
             state.error.message=action.payload
@@ -261,6 +268,7 @@ const userSlice = createSlice({
             const message=(action as any).meta.arg.message
             state.error.message=message;
             state.error.type="warning"
+           
         }).addMatcher((action)=>action.type.startsWith("user/") && action.type.endsWith('/rejected'),(state, action) => {
             state.loading = false;
             const message=(action as any).paylaod

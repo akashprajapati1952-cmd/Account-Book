@@ -2,7 +2,8 @@
 
 export interface VoiceCommandDefinition {
   id: string;
-  phrases: string[];
+  phrases?: string[];
+  patterns?: RegExp[];
   description: string;
 }
 
@@ -28,32 +29,8 @@ export const COMMANDS: readonly VoiceCommandDefinition[] = [
   },
 
   {
-    id: "OPEN_SUPPLIER",
-    phrases: [
-      "open supplier",
-      "supplier kholo",
-      "go to supplier",
-    ],
-    description: "Navigate to Supplier Page",
-  },
-
-  {
-    id: "OPEN_LEDGER",
-    phrases: [
-      "open ledger",
-      "ledger kholo",
-      "go to ledger",
-    ],
-    description: "Navigate to Ledger",
-  },
-
-  {
     id: "OPEN_TRANSACTION",
-    phrases: [
-      "open transaction",
-      "transaction kholo",
-      "go to transaction",
-    ],
+    patterns: [ /^(.+)\s+ki\s+transaction\s+kholo$/i, /^open\s+(.+)\s+transactions?$/i, /^show\s+(.+)\s+transactions?$/i, ],
     description: "Navigate to Transaction",
   },
 
@@ -78,27 +55,6 @@ export const COMMANDS: readonly VoiceCommandDefinition[] = [
   },
 
   {
-    id: "SAVE",
-    phrases: [
-      "save",
-      "save data",
-      "submit",
-      "store",
-    ],
-    description: "Save Current Form",
-  },
-
-  {
-    id: "CANCEL",
-    phrases: [
-      "cancel",
-      "close",
-      "band karo",
-    ],
-    description: "Cancel Current Action",
-  },
-
-  {
     id: "LOGOUT",
     phrases: [
       "logout",
@@ -107,16 +63,126 @@ export const COMMANDS: readonly VoiceCommandDefinition[] = [
     ],
     description: "Logout User",
   },
+  {
+    id: "LOGIN",
+    phrases: [
+      "login",
+      "sign in",
+      "log in",
+    ],
+    description: "Login User",
+  },
+  {
+    id: "FORGET_PASSWORD",
+    phrases: [
+      "forget password",
+      "password reset",
+    ],
+    description: "Reset Password",
+  },
+  {
+    id: "SIGNUP",
+    phrases: [
+      "signup",
+      "register",
+      "create account",
+    ],
+    description: "Create Account",
+  },
+  {
+    id: "DELETE_USER",
+    phrases: [
+      "delete user",
+      "remove user",
+      "delete account",
+    ],
+    description: "Delete User",
+  },
+  {
+    id: "ADD_RECEIVED",
+    phrases: [
+      "add received",
+      "received add karo",
+    ],
+    description: "Add Received Transaction",
+  },
+  {
+    id: "ADD_GIVEN",
+    phrases: [
+      "add given",
+      "given add karo",
+    ],
+    description: "Add Given Transaction",
+  },
+  {
+    id: "SEARCH_CUSTOMER",
+    patterns: [
+      /^search\s+(.+)$/i,
+      /^(.+?)\s+ko\s+search\s+karo$/i,
+    ],
+    description: "Search Customer",
+  },
+
+  {
+    id: "OPEN_ABOUT",
+    phrases: [
+      "open about section",
+      "go to about section",
+      "open about",
+      "go to about"
+    ],
+    description: "open about section"
+  },
+
+  {
+    id: "OPEN_ACCOUNT",
+    phrases:[
+      "open account section",
+      "go to account section",
+      "open account",
+      "go to account",
+      "go to profile section",
+      "open profile section",
+      "open profile",
+      "go to profile"
+    ],
+    description: "open account section"
+  },
+
+  {
+    id: "GO_BACK",
+    phrases:[
+      "go back",
+    ],
+    description: "Go back to the previous page"
+  },
+  {
+    id: "SEARCH_CUSTOMERS",
+    phrases:[
+      "search customers",
+      "search for customers",
+      "find customers",
+      "show all customers",
+    ],
+    description: "Search for customers"
+  }
 ] as const;
 export enum VoiceCommandId {
   OPEN_DASHBOARD = "OPEN_DASHBOARD",
   OPEN_CUSTOMER = "OPEN_CUSTOMER",
-  OPEN_SUPPLIER = "OPEN_SUPPLIER",
-  OPEN_LEDGER = "OPEN_LEDGER",
   OPEN_TRANSACTION = "OPEN_TRANSACTION",
   ADD_CUSTOMER = "ADD_CUSTOMER",
   DELETE_CUSTOMER = "DELETE_CUSTOMER",
-  SAVE = "SAVE",
-  CANCEL = "CANCEL",
   LOGOUT = "LOGOUT",
+  LOGIN = "LOGIN",
+  FORGET_PASSWORD = "FORGET_PASSWORD",
+  SIGNUP = "SIGNUP",
+  DELETE_USER = "DELETE_USER",
+  ADD_RECEIVED = "ADD_RECEIVED",
+  ADD_GIVEN = "ADD_GIVEN",
+  SEARCH_CUSTOMER = "SEARCH_CUSTOMER",
+  OPEN_ABOUT="OPEN_ABOUT",
+  OPEN_ACCOUNT="OPEN_ACCOUNT",
+  GO_BACK="GO_BACK",
+  SEARCH_CUSTOMERS="SEARCH_CUSTOMERS"
 }

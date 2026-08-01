@@ -2,10 +2,13 @@ import { connect, type ConnectedProps } from "react-redux";
 import { userSelector } from "../selectors/userSelectors";
 import type { State } from "../store/store";
 import { Link, useNavigate } from "react-router-dom";
-import { BsMicFill } from "react-icons/bs";
+import VoiceCommand from "./VoiceCommand";
+
 
 const Header = ({ user }: Redux_props) => {
   const navigate = useNavigate();
+
+  const isLoggedIn = !!user.name;
 
   return (
     <header
@@ -79,7 +82,7 @@ const Header = ({ user }: Redux_props) => {
 
       {/* Navigation */}
       <div className="flex items-center gap-4">
-        <BsMicFill /> 
+        <VoiceCommand isLoggedIn={isLoggedIn}/> 
         <Link
           to="/about"
           className="

@@ -12,6 +12,8 @@ import {
   deleteCustomer,
 } from "../reducers/customerSlice";
 import { useNavigate } from "react-router-dom";
+import { setAddingGiven, setAddingReceived } from "../reducers/formsState";
+import { addingGivenSelector, addingReceivedSelector } from "../selectors/formsStateSelector";
 
 interface Props {
   params: Record<string, string>;
@@ -25,32 +27,34 @@ function CustomerTxns({
   addTaken,
   params,
   deleteCustomer,
+  setAddingGiven,
+  setAddingReceived,
+  addingGiven,
+  addingReceived
 }: CustomerTxnsProps) {
   const navigate = useNavigate();
 
   const customerId = params["customerId"];
+;
 
-  const [addingTake, setAddingTake] = useState(false);
-  const [addingGive, setAddingGive] = useState(false);
-
-  function handleTakenSubmit(values: any) {
+  function handleGivenSubmit(values: any) {
     addTaken({
       values,
       customerId,
       message: "Adding Transaction...",
     });
 
-    setAddingTake(false);
+    setAddingGiven(false);
   }
 
-  function handleGivenSubmit(values: any) {
+  function handleReceivedSubmit(values: any) {
     addGiven({
       values,
       customerId,
       message: "Adding Transaction...",
     });
 
-    setAddingGive(false);
+    setAddingReceived(false);
   }
 
   const balance = customer.totalTake - customer.totalGive;
@@ -61,8 +65,8 @@ function CustomerTxns({
       <section className="h-[calc(100vh-220px)] overflow-hidden p-4">
         <ShowTxns
           onClick={() => {
-            setAddingGive(false);
-            setAddingTake(false);
+            setAddingGiven(false);
+            setAddingReceived(false)
           }}
           deleteCustomer={() => {
             deleteCustomer({
@@ -77,7 +81,7 @@ function CustomerTxns({
       </section>
 
       {/* Modal */}
-      {(addingGive || addingTake) && (
+      {(addingReceived || addingGiven) && (
         <>
           <div
             className="
@@ -88,8 +92,8 @@ function CustomerTxns({
               backdrop-blur-sm
             "
             onClick={() => {
-              setAddingGive(false);
-              setAddingTake(false);
+              setAddingGiven(false);
+              setAddingReceived(false)
             }}
           />
 
@@ -114,17 +118,17 @@ function CustomerTxns({
               shadow-2xl
             "
           >
-            {addingTake && (
+            {addingGiven && (
               <AddEntry
                 heading="Add Given"
-                handleSubmit={handleTakenSubmit}
+                handleSubmit={handleGivenSubmit}
               />
             )}
 
-            {addingGive && (
+            {addingReceived && (
               <AddEntry
                 heading="Add Received"
-                handleSubmit={handleGivenSubmit}
+                handleSubmit={handleReceivedSubmit}
               />
             )}
           </div>
@@ -180,8 +184,8 @@ function CustomerTxns({
             <Button
               type="button"
               handleClick={() => {
-                setAddingGive(true);
-                setAddingTake(false);
+                setAddingGiven(false);
+                setAddingReceived(true)
               }}
             >
               Money Received
@@ -190,8 +194,8 @@ function CustomerTxns({
             <Button
               type="button"
               handleClick={() => {
-                setAddingTake(true);
-                setAddingGive(false);
+                setAddingGiven(true);
+                setAddingReceived(false)
               }}
             >
               Money Given
@@ -211,6 +215,8 @@ const mapStateToProps = (
 
   return {
     customer: customerSelector(state, customerId),
+    addingGiven: addingGivenSelector(state),
+    addingReceived: addingReceivedSelector(state)
   };
 };
 
@@ -218,6 +224,8 @@ const mapDispatchToProps = {
   addTaken,
   addGiven,
   deleteCustomer,
+  setAddingGiven,
+  setAddingReceived
 };
 
 const connectedComp = connect(
@@ -230,3 +238,4 @@ type Redux_props = ConnectedProps<typeof connectedComp>;
 export default withParams(
   connectedComp(CustomerTxns)
 );
+
