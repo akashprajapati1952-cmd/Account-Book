@@ -155,6 +155,16 @@ export const COMMANDS: readonly VoiceCommandDefinition[] = [
       "go back",
     ],
     description: "Go back to the previous page"
+  },
+  {
+    id: "SEARCH_CUSTOMERS",
+    phrases:[
+      "search customers",
+      "search for customers",
+      "find customers",
+      "show all customers",
+    ],
+    description: "Search for customers"
   }
 ] as const;
 export enum VoiceCommandId {
@@ -173,5 +183,6 @@ export enum VoiceCommandId {
   SEARCH_CUSTOMER = "SEARCH_CUSTOMER",
   OPEN_ABOUT="OPEN_ABOUT",
   OPEN_ACCOUNT="OPEN_ACCOUNT",
-  GO_BACK="GO_BACK"
+  GO_BACK="GO_BACK",
+  SEARCH_CUSTOMERS="SEARCH_CUSTOMERS"
 }

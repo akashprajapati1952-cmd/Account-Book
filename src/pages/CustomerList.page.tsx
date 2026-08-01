@@ -4,6 +4,7 @@ import type { State } from "../store/store";
 import { Form, Formik } from "formik";
 import {
   addCustomer,
+  getCustomers,
   searchCustomer,
   setQueryAction,
 } from "../reducers/customerSlice";
@@ -23,13 +24,21 @@ function CustomerList({
   loading,
   query,
   isAdding,
-  setIsAdding
+  setIsAdding,
+  setQueryAction,
+  getCustomers
 }: Redux_props) {
   
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      if (query.trim()) searchCustomer({query});
+      if (query.trim()) {
+        searchCustomer({query});
+        return;
+      }
+      
+      getCustomers();
+      
     }, 800);
 
     return () => clearTimeout(timer);
@@ -48,13 +57,13 @@ function CustomerList({
           <h1 className="text-2xl md:text-3xl font-bold text-slate-800 mb-4">
             Customers
           </h1>
-
+          
+          
           <input
             type="text"
             placeholder="Search customer..."
             value={query}
             onChange={(e) =>{
-              console.log(e.target.value)
               setQueryAction(e.target.value)}}
             className="
               w-full
@@ -251,7 +260,8 @@ const mapDispatchToProps = {
   addCustomer,
   searchCustomer,
   setQueryAction,
-  setIsAdding:setAddingCustomer
+  setIsAdding:setAddingCustomer,
+  getCustomers
 };
 
 const connectedComp = connect(

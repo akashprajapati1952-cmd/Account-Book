@@ -82,6 +82,40 @@ export const searchCustomer = createAsyncThunk("customer/search",async({query}:{
   }
 );
 
+export const getCustomers = createAsyncThunk("customer/all",async(_,thunkAPI)=>{
+
+    try{
+
+      const response = await axios.get(
+        `${BASE_URL}/customer/all`,
+        {
+          headers:{
+            Authorization:
+            `Bearer ${localStorage.getItem("token")}`
+          }
+        }
+      );
+
+      return response.data;
+
+    }catch(error){
+
+      if(axios.isAxiosError(error)){
+        return thunkAPI.rejectWithValue(
+          error.response?.data.message ||
+          "failed to fetch customers"
+        );
+      }
+
+      return thunkAPI.rejectWithValue(
+        "Something went wrong"
+      );
+
+    }
+
+  }
+);
+
 export const addTaken=createAsyncThunk('customer/add-take',async({ customerId, values }: { customerId: string; values: any ,message:string}, thunkAPI)=>{
     try{
 
@@ -161,13 +195,19 @@ const customerSlice=createSlice({
             state.error={type:"success",message: action.payload.data.message}
         }).addCase(searchCustomer.fulfilled,(state,action)=>{
           state.loading=false
-          state.customers =action.payload.customers
-          
-       })
+          setCustomers(state,{type: "",payload: action.payload.customers})
+        }).addCase(getCustomers.fulfilled,(state,action)=>{
+          state.loading=false
+          setCustomers(state,{type: "",payload: action.payload.customers})
+        })
         builder.addMatcher((action)=>action.type.startsWith("customer/") && action.type.endsWith("/pending"), (state,action) => {
             state.loading = true;
+            try{
             const message=(action as any).meta.arg.message
             state.error={type:"warning",message};
+            }catch(err){
+                console.log("Error in pending matcher", err)
+            }
         }).addMatcher((action)=>action.type.startsWith("customer/") && action.type.endsWith("/rejected"), (state, action) => {
             state.loading = false;
             const message=(action as any).payload

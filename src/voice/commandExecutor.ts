@@ -177,7 +177,7 @@ class CommandExecutor {
         context.dispatch(context.actions?.setQueryAction(context.params.customerName))
         VoiceOutput.speak("searching customer");
         return true;
-
+      
       default:
         VoiceOutput.speak("Command not found");
         return false;
