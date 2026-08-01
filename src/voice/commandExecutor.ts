@@ -90,7 +90,7 @@ class CommandExecutor {
 
       case VoiceCommandId.GO_BACK:
         try{
-          context.navigate?.(-1);
+          window.history.back()
         }catch(e){
           VoiceOutput.speak("Cannot go back from this page");
           return true;
