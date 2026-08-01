@@ -16,6 +16,7 @@ export interface CommandExecutorContext {
   params?: {
     customerId?: string;
     customerName?: string;
+    query?: string;
   };
 }
 
@@ -178,6 +179,15 @@ class CommandExecutor {
         VoiceOutput.speak("searching customer");
         return true;
       
+      case VoiceCommandId.SEARCH_CUSTOMERS:
+        if(!context.params?.query){
+          context.dispatch(context.actions?.getCustomers());
+          VoiceOutput.speak("getting customers");
+          return true;
+        }
+
+        VoiceOutput.speak(`already showing all customers`);
+        return true;
       default:
         VoiceOutput.speak("Command not found");
         return false;
